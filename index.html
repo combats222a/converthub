@@ -36,6 +36,13 @@
   }
   header .brand{ color: var(--paper); font-weight:bold; letter-spacing:0.05em;}
   header .brand span{ color: var(--safelight); }
+  #counterBadge{
+    font-family:'Courier New', monospace; font-size:12px; letter-spacing:0.08em;
+    padding:5px 12px; border:1px solid var(--line); border-radius:20px; color:var(--text-dim);
+    white-space:nowrap;
+  }
+  #counterBadge.unlimited{ border-color: var(--film); color: var(--film); }
+  #counterBadge b{ color: var(--paper); }
 
   main{ max-width: 880px; margin: 0 auto; padding: 8vh 6vw 10vh; position:relative; z-index:2;}
 
@@ -69,6 +76,7 @@
     border-color: var(--safelight);
     background: #2a2018;
   }
+  .dropzone.locked{ opacity:0.4; pointer-events:none; }
   .dropzone input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
   .dz-label{
     font-family:'Helvetica Neue', Arial, sans-serif;
@@ -108,6 +116,45 @@
   .frame .status.working{ color: var(--safelight); }
   .frame a{ color: var(--paper); text-decoration:underline; text-decoration-color: var(--safelight); }
 
+  /* Пейволл */
+  .paywall{
+    display:none;
+    margin-top: 40px;
+    border: 1px solid var(--safelight-dim);
+    background: linear-gradient(180deg, rgba(212,87,42,0.08), transparent);
+    padding: 36px 30px;
+    border-radius:2px;
+  }
+  .paywall.show{ display:block; }
+  .paywall .pw-title{
+    font-size: 1.4rem; margin-bottom:8px;
+  }
+  .paywall .pw-sub{
+    font-family:'Helvetica Neue', Arial, sans-serif; font-size:14px; color:var(--text-dim);
+    margin-bottom: 26px; line-height:1.5;
+  }
+  .plans{ display:grid; grid-template-columns: 1fr 1fr; gap:16px; }
+  @media (max-width:520px){ .plans{ grid-template-columns:1fr; } }
+  .plan{
+    border:1px solid var(--line); background: var(--bg-raised);
+    padding: 22px 20px; border-radius:2px; text-align:left; cursor:pointer;
+    transition: border-color 0.2s ease;
+    font-family:'Helvetica Neue', Arial, sans-serif;
+  }
+  .plan:hover{ border-color: var(--safelight); }
+  .plan .plan-name{
+    font-family:'Courier New', monospace; font-size:11px; letter-spacing:0.1em;
+    color: var(--safelight); text-transform:uppercase; margin-bottom:10px;
+  }
+  .plan .plan-price{ font-size:1.8rem; font-family: 'Iowan Old Style', Georgia, serif; margin-bottom:6px; }
+  .plan .plan-price span{ font-size:0.9rem; color:var(--text-dim); }
+  .plan .plan-desc{ font-size:13px; color:var(--text-dim); }
+  .plan.recommended{ border-color: var(--safelight); }
+
+  .pw-status{
+    margin-top:18px; font-family:'Courier New', monospace; font-size:12px; color:var(--text-dim);
+  }
+
   footer{
     border-top:1px solid var(--line);
     padding: 24px 6vw; text-align:center;
@@ -120,7 +167,7 @@
 <div class="grain"></div>
 <header>
   <div class="brand">Convert<span>Hub</span></div>
-  <div>№ 001 — HEIC / JPG / PNG</div>
+  <div id="counterBadge">…</div>
 </header>
 
 <main>
@@ -136,7 +183,25 @@
   <div class="dropzone" id="dropzone">
     <input type="file" id="fileInput" accept=".heic,.heif" multiple>
     <div class="dz-label"><strong>Перетащите HEIC-файлы</strong> сюда, или нажмите, чтобы выбрать</div>
-    <div class="dz-hint">ДО 20 ФАЙЛОВ ЗА РАЗ · ОБРАБОТКА ЛОКАЛЬНО</div>
+    <div class="dz-hint" id="dzHint">ДО 20 ФАЙЛОВ ЗА РАЗ · ОБРАБОТКА ЛОКАЛЬНО</div>
+  </div>
+
+  <div class="paywall" id="paywall">
+    <div class="pw-title">Лимит на сегодня закончился</div>
+    <div class="pw-sub">Бесплатно доступно 5 кадров в день. Проявите ещё — выберите вариант ниже.</div>
+    <div class="plans">
+      <div class="plan" data-plan="day">
+        <div class="plan-name">На сегодня</div>
+        <div class="plan-price">$1</div>
+        <div class="plan-desc">Безлимит до полуночи</div>
+      </div>
+      <div class="plan recommended" data-plan="month">
+        <div class="plan-name">Подписка</div>
+        <div class="plan-price">$3 <span>/ мес</span></div>
+        <div class="plan-desc">Безлимит на 30 дней</div>
+      </div>
+    </div>
+    <div class="pw-status" id="pwStatus"></div>
   </div>
 
   <div class="contact-sheet" id="sheet"></div>
@@ -146,6 +211,118 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
 <script>
+  const FREE_LIMIT = 5;
+
+  // --- Токен пользователя ---
+  function getToken(){
+    let token = localStorage.getItem('ch_token');
+    if(!token){
+      token = 'u_' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+      localStorage.setItem('ch_token', token);
+    }
+    return token;
+  }
+  const token = getToken();
+
+  // --- Счётчик бесплатных конвертаций за сегодня ---
+  function todayKey(){
+    const d = new Date();
+    return `ch_count_${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }
+  function getTodayCount(){
+    return parseInt(localStorage.getItem(todayKey()) || '0', 10);
+  }
+  function incTodayCount(){
+    localStorage.setItem(todayKey(), String(getTodayCount()+1));
+  }
+
+  // --- Статус оплаты (кэш в localStorage, проверяется через /api/check-status) ---
+  let paidUntil = parseInt(localStorage.getItem('ch_paid_until') || '0', 10);
+
+  function isPaidNow(){
+    return paidUntil && paidUntil > Date.now();
+  }
+
+  async function refreshPaidStatus(){
+    try{
+      const res = await fetch(`/api/check-status?token=${token}`);
+      const data = await res.json();
+      if(data.paid){
+        paidUntil = data.expiresAt;
+        localStorage.setItem('ch_paid_until', String(paidUntil));
+      }
+    }catch(e){ console.error('Не удалось проверить статус оплаты', e); }
+    updateUI();
+  }
+
+  function updateUI(){
+    const badge = document.getElementById('counterBadge');
+    const dropzone = document.getElementById('dropzone');
+    const paywall = document.getElementById('paywall');
+    const dzHint = document.getElementById('dzHint');
+
+    if(isPaidNow()){
+      badge.innerHTML = `<b>∞</b> безлимит`;
+      badge.classList.add('unlimited');
+      dropzone.classList.remove('locked');
+      paywall.classList.remove('show');
+      dzHint.textContent = 'ДО 20 ФАЙЛОВ ЗА РАЗ · БЕЗЛИМИТ АКТИВЕН';
+      return;
+    }
+
+    const used = getTodayCount();
+    const left = Math.max(0, FREE_LIMIT - used);
+    badge.innerHTML = `<b>${left}</b> из ${FREE_LIMIT} сегодня`;
+    badge.classList.remove('unlimited');
+
+    if(left <= 0){
+      dropzone.classList.add('locked');
+      paywall.classList.add('show');
+    }else{
+      dropzone.classList.remove('locked');
+      paywall.classList.remove('show');
+    }
+  }
+
+  // При загрузке — если вернулись после оплаты (?paid=1), проверяем статус
+  if(new URLSearchParams(location.search).get('paid') === '1'){
+    document.getElementById('pwStatus').textContent = 'Проверяем оплату…';
+    refreshPaidStatus();
+    // чистим URL, чтобы не проверять повторно при обновлении страницы
+    history.replaceState({}, '', location.pathname);
+  } else {
+    updateUI();
+  }
+
+  // На всякий случай — периодическая проверка, если пользователь оплатил в соседней вкладке
+  setInterval(()=>{ if(!isPaidNow()) refreshPaidStatus(); }, 15000);
+
+  // --- Клик по тарифу — создаём инвойс ---
+  document.querySelectorAll('.plan').forEach(planEl=>{
+    planEl.addEventListener('click', async ()=>{
+      const plan = planEl.dataset.plan;
+      const statusEl = document.getElementById('pwStatus');
+      statusEl.textContent = 'Создаём счёт на оплату…';
+      try{
+        const res = await fetch('/api/create-invoice', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ token, plan })
+        });
+        const data = await res.json();
+        if(data.invoice_url){
+          window.location.href = data.invoice_url;
+        }else{
+          statusEl.textContent = 'Ошибка: не удалось создать счёт. Попробуйте позже.';
+        }
+      }catch(e){
+        console.error(e);
+        statusEl.textContent = 'Ошибка соединения. Попробуйте позже.';
+      }
+    });
+  });
+
+  // --- Формат конвертации ---
   let targetFormat = 'jpeg';
   document.querySelectorAll('.format-toggle button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
@@ -155,17 +332,19 @@
     });
   });
 
+  // --- Дропзона ---
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
   const sheet = document.getElementById('sheet');
 
   ['dragenter','dragover'].forEach(evt=>{
-    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); if(!dropzone.classList.contains('locked')) dropzone.classList.add('drag'); });
   });
   ['dragleave','drop'].forEach(evt=>{
     dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove('drag'); });
   });
   dropzone.addEventListener('drop', e=>{
+    if(dropzone.classList.contains('locked')) return;
     handleFiles(e.dataTransfer.files);
   });
   fileInput.addEventListener('change', e=>{
@@ -174,6 +353,12 @@
 
   function handleFiles(fileList){
     Array.from(fileList).forEach(file=>{
+      // Проверяем лимит перед каждым файлом (на случай батч-загрузки на грани лимита)
+      if(!isPaidNow() && getTodayCount() >= FREE_LIMIT){
+        updateUI();
+        return;
+      }
+
       const frame = document.createElement('div');
       frame.className='frame';
       const idx = String(sheet.children.length+1).padStart(3,'0');
@@ -191,6 +376,8 @@
             <div class="status">ГОТОВО</div>
             <a href="${url}" download="${outName}">скачать ${outName}</a>
           `;
+          if(!isPaidNow()) incTodayCount();
+          updateUI();
         })
         .catch(err=>{
           frame.innerHTML = `<div class="status" style="color:#c93b3b">ОШИБКА: не HEIC или повреждён</div>`;
