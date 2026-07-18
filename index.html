@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConvertHub — HEIC в JPG и PNG за секунды</title>
+<meta name="description" content="Конвертируйте HEIC-фото с iPhone в JPG или PNG прямо в браузере. Без загрузки на сервер, без потери приватности.">
+<style>
+  :root{
+    --bg: #17130f;
+    --bg-raised: #221c16;
+    --paper: #f2ece1;
+    --safelight: #d4572a;
+    --safelight-dim: #a8431f;
+    --film: #4a6b5a;
+    --line: #3a2f24;
+    --text-dim: #b8ab97;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background: var(--bg);
+    color: var(--paper);
+    font-family: 'Iowan Old Style', 'Georgia', serif;
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  .grain{
+    position:fixed; inset:0; pointer-events:none; opacity:0.05; z-index:1;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  header{
+    display:flex; justify-content:space-between; align-items:center;
+    padding: 28px 6vw; border-bottom:1px solid var(--line);
+    font-family: 'Courier New', monospace; font-size:13px; letter-spacing:0.12em;
+    text-transform:uppercase; color:var(--text-dim);
+  }
+  header .brand{ color: var(--paper); font-weight:bold; letter-spacing:0.05em;}
+  header .brand span{ color: var(--safelight); }
+
+  main{ max-width: 880px; margin: 0 auto; padding: 8vh 6vw 10vh; position:relative; z-index:2;}
+
+  .frame-number{
+    font-family:'Courier New', monospace; font-size:12px; color:var(--safelight);
+    letter-spacing:0.15em; margin-bottom:18px;
+  }
+
+  h1{
+    font-size: clamp(2.4rem, 6vw, 4.2rem);
+    line-height:1.05; font-weight:400; max-width:14ch;
+    margin-bottom: 22px;
+  }
+  h1 em{ font-style:italic; color: var(--safelight); }
+
+  .sub{
+    font-family:'Helvetica Neue', Arial, sans-serif; font-size:17px;
+    color: var(--text-dim); max-width:52ch; line-height:1.6; margin-bottom: 56px;
+  }
+
+  .dropzone{
+    border:1px dashed var(--line);
+    border-radius:2px;
+    padding: 60px 30px;
+    text-align:center;
+    position:relative;
+    transition: border-color 0.25s ease, background 0.25s ease;
+    background: var(--bg-raised);
+  }
+  .dropzone.drag{
+    border-color: var(--safelight);
+    background: #2a2018;
+  }
+  .dropzone input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .dz-label{
+    font-family:'Helvetica Neue', Arial, sans-serif;
+    font-size:15px; color: var(--text-dim);
+  }
+  .dz-label strong{ color: var(--paper); font-weight:600; }
+  .dz-hint{ font-family:'Courier New', monospace; font-size:11px; color: var(--safelight-dim); margin-top:10px; letter-spacing:0.08em;}
+
+  .format-toggle{
+    display:flex; gap:10px; justify-content:center; margin: 28px 0 0;
+    font-family:'Courier New', monospace; font-size:12px; letter-spacing:0.1em;
+  }
+  .format-toggle button{
+    background:none; border:1px solid var(--line); color:var(--text-dim);
+    padding: 8px 18px; cursor:pointer; border-radius:2px; text-transform:uppercase;
+  }
+  .format-toggle button.active{
+    border-color: var(--safelight); color: var(--paper); background: rgba(212,87,42,0.12);
+  }
+
+  .contact-sheet{
+    margin-top: 48px;
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(140px,1fr));
+    gap:14px;
+  }
+  .frame{
+    background: var(--bg-raised);
+    border:1px solid var(--line);
+    padding: 10px;
+    font-family:'Courier New', monospace;
+    font-size:11px;
+    color: var(--text-dim);
+    position:relative;
+  }
+  .frame img{ width:100%; display:block; margin-bottom:8px; filter:sepia(0.15); }
+  .frame .status{ color: var(--film); }
+  .frame .status.working{ color: var(--safelight); }
+  .frame a{ color: var(--paper); text-decoration:underline; text-decoration-color: var(--safelight); }
+
+  footer{
+    border-top:1px solid var(--line);
+    padding: 24px 6vw; text-align:center;
+    font-family:'Courier New', monospace; font-size:11px; color: var(--text-dim);
+    letter-spacing:0.08em;
+  }
+</style>
+</head>
+<body>
+<div class="grain"></div>
+<header>
+  <div class="brand">Convert<span>Hub</span></div>
+  <div>№ 001 — HEIC / JPG / PNG</div>
+</header>
+
+<main>
+  <div class="frame-number">РУЛОН 01 / КАДР HEIC→RGB</div>
+  <h1>Ваш iPhone снял <em>HEIC</em>. Здесь он проявится в JPG.</h1>
+  <p class="sub">Перетащите фото — конвертация происходит прямо в этой вкладке браузера. Файлы никуда не отправляются: ни на сервер, ни в облако.</p>
+
+  <div class="format-toggle">
+    <button data-fmt="jpeg" class="active">в JPG</button>
+    <button data-fmt="png">в PNG</button>
+  </div>
+
+  <div class="dropzone" id="dropzone">
+    <input type="file" id="fileInput" accept=".heic,.heif" multiple>
+    <div class="dz-label"><strong>Перетащите HEIC-файлы</strong> сюда, или нажмите, чтобы выбрать</div>
+    <div class="dz-hint">ДО 20 ФАЙЛОВ ЗА РАЗ · ОБРАБОТКА ЛОКАЛЬНО</div>
+  </div>
+
+  <div class="contact-sheet" id="sheet"></div>
+</main>
+
+<footer>ConvertHub — конвертация без сервера, без слежки, без очереди</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+<script>
+  let targetFormat = 'jpeg';
+  document.querySelectorAll('.format-toggle button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('.format-toggle button').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      targetFormat = btn.dataset.fmt;
+    });
+  });
+
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('fileInput');
+  const sheet = document.getElementById('sheet');
+
+  ['dragenter','dragover'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
+  });
+  ['dragleave','drop'].forEach(evt=>{
+    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove('drag'); });
+  });
+  dropzone.addEventListener('drop', e=>{
+    handleFiles(e.dataTransfer.files);
+  });
+  fileInput.addEventListener('change', e=>{
+    handleFiles(e.target.files);
+  });
+
+  function handleFiles(fileList){
+    Array.from(fileList).forEach(file=>{
+      const frame = document.createElement('div');
+      frame.className='frame';
+      const idx = String(sheet.children.length+1).padStart(3,'0');
+      frame.innerHTML = `<div class="status working">КАДР ${idx} — проявляется…</div>`;
+      sheet.appendChild(frame);
+
+      heic2any({ blob: file, toType: `image/${targetFormat}`, quality: 0.9 })
+        .then(result=>{
+          const blob = Array.isArray(result) ? result[0] : result;
+          const url = URL.createObjectURL(blob);
+          const ext = targetFormat === 'jpeg' ? 'jpg' : 'png';
+          const outName = file.name.replace(/\.(heic|heif)$/i, '') + '.' + ext;
+          frame.innerHTML = `
+            <img src="${url}" alt="${outName}">
+            <div class="status">ГОТОВО</div>
+            <a href="${url}" download="${outName}">скачать ${outName}</a>
+          `;
+        })
+        .catch(err=>{
+          frame.innerHTML = `<div class="status" style="color:#c93b3b">ОШИБКА: не HEIC или повреждён</div>`;
+          console.error(err);
+        });
+    });
+  }
+</script>
+</body>
+</html>
