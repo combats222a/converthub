@@ -703,6 +703,15 @@
   }
   renderFmtGrid('');
 
+  // Если пришли с главной с уже выбранным форматом (?to=jpg/png) — применяем сразу.
+  (function applyIncomingFormat(){
+    const to = new URLSearchParams(location.search).get('to');
+    if(to && (to.toLowerCase() === 'jpg' || to.toLowerCase() === 'png')){
+      selectTargetFormat(to.toUpperCase());
+      history.replaceState({}, '', location.pathname);
+    }
+  })();
+
   document.getElementById('fmtSearch').addEventListener('input', e=> renderFmtGrid(e.target.value));
 
   // Переключение раздела — сетка форматов справа перерисовывается под выбранный

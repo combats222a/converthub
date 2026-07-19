@@ -121,6 +121,90 @@
   .cw-cloud-btn svg{ width:18px; height:18px; }
   .cw-cloud-btn:hover{ color: var(--text); }
 
+  .cw-formats-row{ display:flex; align-items:center; justify-content:center; gap:10px; margin-top:16px; }
+  .cw-arrow{ color: var(--text-dim); font-size:14px; }
+
+  .fmt-picker{ position:relative; }
+  .fmt-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    border:none; border-radius:9px; padding:12px 16px;
+    font-size:16px; font-weight:700; cursor:pointer;
+  }
+  .fmt-btn svg{ width:16px; height:16px; transition: transform 0.15s ease; flex-shrink:0; }
+  .fmt-btn.open svg{ transform: rotate(180deg); }
+  .fmt-btn.dark{ background:#0e0f13; color:#fff; border:1px solid var(--border); }
+  .fmt-btn.light{ background:#fff; color:#111; }
+
+  .fmt-dropdown{
+    display:none; position:absolute; top: calc(100% + 8px); left:0;
+    background: #17181d; border:1px solid var(--border); border-radius:12px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+    z-index:60; padding:14px;
+  }
+  .fmt-dropdown.open{ display:block; }
+
+  .fmt-dropdown-source{ min-width:150px; display:none; }
+  .fmt-dropdown-source.open{ display:flex; flex-direction:column; gap:2px; }
+  .fmt-dropdown-source .fmt-chip{
+    background:none; border:none; color:var(--text); text-align:left;
+    padding:9px 10px; border-radius:7px; cursor:pointer; font-size:14px; font-weight:500;
+  }
+  .fmt-dropdown-source .fmt-chip:hover{ background: var(--bg-input); }
+
+  .fmt-dropdown-target{ width:420px; max-width:86vw; right:0; left:auto; }
+
+  .fmt-search{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--border); border-radius:8px; padding:8px 10px;
+    margin-bottom:12px;
+  }
+  .fmt-search svg{ width:16px; height:16px; color: var(--text-dim); flex-shrink:0; }
+  .fmt-search input{
+    background:none; border:none; outline:none; color:var(--text); font-size:14px; width:100%;
+  }
+
+  .fmt-body{ display:flex; gap:14px; }
+  .fmt-categories{
+    display:flex; flex-direction:column; gap:2px; min-width:150px;
+    border-right:1px solid var(--border); padding-right:12px;
+    max-height:280px; overflow-y:auto;
+  }
+  .fmt-cat{
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    background:none; border:none; color: var(--text-dim); text-align:left;
+    padding:8px 8px; border-radius:7px; font-size:13px; cursor:pointer; white-space:nowrap;
+  }
+  .fmt-cat svg{ width:14px; height:14px; flex-shrink:0; opacity:0; }
+  .fmt-cat:hover{ background: var(--bg-input); }
+  .fmt-cat.active{ color:#fff; background: rgba(255,255,255,0.05); }
+  .fmt-cat.active svg{ opacity:1; }
+
+  .fmt-grid{
+    flex:1; display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;
+    max-height:280px; overflow-y:auto; padding-right:4px; align-content:start;
+  }
+  .fmt-chip{
+    background: var(--bg-input); border:1px solid var(--border); color: var(--text);
+    padding:9px 4px; border-radius:7px; font-size:12px; font-weight:600;
+    cursor:pointer; text-align:center; transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .fmt-chip:hover{ border-color: var(--accent); }
+  .fmt-chip.active{ background: var(--accent); border-color: var(--accent); color:#fff; }
+  .fmt-chip.disabled{ opacity:0.4; cursor:not-allowed; }
+  .fmt-chip.disabled:hover{ border-color: var(--border); }
+  .fmt-empty{ grid-column: 1 / -1; color: var(--text-dim); font-size:13px; padding:20px 0; text-align:center; }
+
+  @media (max-width:480px){
+    .fmt-dropdown-target{ width:92vw; left:0; right:auto; }
+    .fmt-body{ flex-direction:column; }
+    .fmt-categories{
+      flex-direction:row; overflow-x:auto; border-right:none;
+      border-bottom:1px solid var(--border); padding-right:0; padding-bottom:8px;
+      min-width:0; max-height:none;
+    }
+    .fmt-grid{ max-height:220px; }
+  }
+
   .cw-hint{ font-size:13px; color: var(--text-dim); margin-top:18px; text-align:center; }
   .cw-hint a{ color: var(--accent); text-decoration:underline; cursor:pointer; }
 
@@ -244,6 +328,45 @@
       </button>
     </div>
 
+    <div class="cw-formats-row">
+      <div class="fmt-picker" id="sourcePicker">
+        <button type="button" class="fmt-btn dark" id="sourceBtn">
+          <span id="sourceBtnLabel">HEIC</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="fmt-dropdown fmt-dropdown-source" id="sourceDropdown">
+          <button type="button" class="fmt-chip">HEIC</button>
+          <button type="button" class="fmt-chip">HEIF</button>
+        </div>
+      </div>
+
+      <span class="cw-arrow">в</span>
+
+      <div class="fmt-picker" id="targetPicker">
+        <button type="button" class="fmt-btn light" id="targetBtn">
+          <span id="targetBtnLabel">Выберите формат</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="fmt-dropdown fmt-dropdown-target" id="targetDropdown">
+          <div class="fmt-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input type="text" id="fmtSearch" placeholder="Поиск">
+          </div>
+          <div class="fmt-body">
+            <div class="fmt-categories" id="fmtCategories">
+              <button type="button" class="fmt-cat active" data-cat="image">Изображение <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+              <button type="button" class="fmt-cat" data-cat="doc">Документ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+              <button type="button" class="fmt-cat" data-cat="ebook">Электронная книга <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+              <button type="button" class="fmt-cat" data-cat="font">Шрифт <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+              <button type="button" class="fmt-cat" data-cat="vector">Вектор <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+              <button type="button" class="fmt-cat" data-cat="cad">CAD <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+            </div>
+            <div class="fmt-grid" id="fmtGrid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="cw-hint">Перетащите файлы сюда · 1 GB максимальный размер файла или <a id="registerLink">Регистрация</a></div>
   </div>
 </main>
@@ -336,6 +459,131 @@
     showToast('Регистрация скоро появится');
   });
 
+  /* ===== Виджет выбора форматов (тот же список, что на /ru/heic/) =====
+     Здесь ничего не конвертирует — реальная конвертация и лимиты живут на
+     /ru/heic/, сюда пользователь просто выбирает формат, а дальше его
+     перенаправляет handleFiles(). */
+  let targetFormat = null;
+  let selectedTargetCode = null;
+
+  const IMAGE_FORMATS = [
+    {code:'JPG', enabled:true}, {code:'PNG', enabled:true}, {code:'JPEG', enabled:false},
+    {code:'WEBP', enabled:false}, {code:'SVG', enabled:false}, {code:'TIFF', enabled:false},
+    {code:'GIF', enabled:false}, {code:'BMP', enabled:false}, {code:'PSD', enabled:false},
+    {code:'HDR', enabled:false}, {code:'JBG', enabled:false}, {code:'JPE', enabled:false},
+    {code:'ICO', enabled:false}, {code:'PDB', enabled:false}, {code:'AVIF', enabled:false},
+    {code:'JFIF', enabled:false}, {code:'RGB', enabled:false}, {code:'JPS', enabled:false},
+    {code:'CUR', enabled:false}, {code:'EXR', enabled:false}, {code:'JIF', enabled:false},
+    {code:'HRZ', enabled:false}, {code:'WBMP', enabled:false}, {code:'MAP', enabled:false},
+    {code:'PPM', enabled:false}, {code:'IPL', enabled:false}, {code:'PGM', enabled:false},
+    {code:'JP2', enabled:false}, {code:'TGA', enabled:false}, {code:'DDS', enabled:false},
+    {code:'PCX', enabled:false}, {code:'PBM', enabled:false}, {code:'FAX', enabled:false},
+    {code:'FTS', enabled:false}, {code:'G3', enabled:false}, {code:'MNG', enabled:false},
+    {code:'MTV', enabled:false}, {code:'OTB', enabled:false}, {code:'PAL', enabled:false},
+    {code:'PALM', enabled:false}, {code:'PAM', enabled:false}, {code:'PCD', enabled:false},
+    {code:'PCT', enabled:false}, {code:'PFM', enabled:false}, {code:'PICON', enabled:false},
+    {code:'PICT', enabled:false}, {code:'PNM', enabled:false}, {code:'RAS', enabled:false},
+    {code:'RGBA', enabled:false}, {code:'RGBO', enabled:false}, {code:'SGI', enabled:false},
+    {code:'SUN', enabled:false}, {code:'UYVY', enabled:false}, {code:'VIFF', enabled:false},
+    {code:'XBM', enabled:false}, {code:'XPM', enabled:false}, {code:'XV', enabled:false},
+    {code:'XWD', enabled:false}, {code:'YUV', enabled:false}, {code:'JBIG', enabled:false},
+    {code:'G4', enabled:false}, {code:'RGF', enabled:false}, {code:'SIX', enabled:false},
+    {code:'SIXEL', enabled:false}, {code:'VIPS', enabled:false}, {code:'JFI', enabled:false},
+    {code:'PGX', enabled:false},
+  ];
+  function toFormats(codes){ return codes.map(code => ({code, enabled:false})); }
+  const FORMATS = {
+    image: IMAGE_FORMATS,
+    doc: toFormats(['PDF','DOC','DOCX','XPS','DOCM','DOTX','ABW','AW','ODT','RTF','DOT','DOTM','DJVU','DBK','KWD','SXW','OXPS']),
+    ebook: toFormats(['PDB','EPUB','AZW3','FB2','LRF','MOBI','RB','SNB','TCR']),
+    font: toFormats(['PS']),
+    vector: toFormats(['SVG','EPS','AI','PLT','SK','FIG','PS','EMF','WMF','CGM','SK1']),
+    cad: toFormats(['DXF']),
+  };
+  const CAT_LABELS = { image:'Изображение', doc:'Документ', ebook:'Электронная книга', font:'Шрифт', vector:'Вектор', cad:'CAD' };
+  let currentCategory = 'image';
+
+  function selectTargetFormat(code){
+    selectedTargetCode = code;
+    targetFormat = code === 'PNG' ? 'png' : 'jpeg';
+    document.getElementById('targetBtnLabel').textContent = code;
+    renderFmtGrid(document.getElementById('fmtSearch').value);
+    closeAllDropdowns();
+  }
+
+  function renderFmtGrid(filter){
+    const grid = document.getElementById('fmtGrid');
+    const q = (filter || '').trim().toUpperCase();
+    const list = FORMATS[currentCategory] || [];
+    grid.innerHTML = '';
+    const matches = list.filter(f => !q || f.code.includes(q));
+    matches.forEach(f=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'fmt-chip' + (f.enabled ? '' : ' disabled') + (f.code === selectedTargetCode ? ' active' : '');
+      btn.textContent = f.code;
+      if(f.enabled){
+        btn.addEventListener('click', ()=> selectTargetFormat(f.code));
+      } else {
+        btn.addEventListener('click', ()=> showToast(`${f.code} — конвертация скоро появится`));
+      }
+      grid.appendChild(btn);
+    });
+    if(!matches.length){
+      grid.innerHTML = '<div class="fmt-empty">Ничего не найдено</div>';
+    }
+  }
+  renderFmtGrid('');
+
+  document.getElementById('fmtSearch').addEventListener('input', e=> renderFmtGrid(e.target.value));
+
+  document.querySelectorAll('.fmt-cat').forEach(cat=>{
+    cat.addEventListener('click', e=>{
+      e.stopPropagation();
+      const key = cat.dataset.cat;
+      if(key === currentCategory) return;
+      currentCategory = key;
+      document.querySelectorAll('.fmt-cat').forEach(c=>c.classList.remove('active'));
+      cat.classList.add('active');
+      document.getElementById('fmtSearch').value = '';
+      renderFmtGrid('');
+      if(key !== 'image'){
+        showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
+      }
+    });
+  });
+
+  document.querySelectorAll('#sourceDropdown .fmt-chip').forEach(chip=>{
+    chip.addEventListener('click', e=>{
+      e.stopPropagation();
+      document.getElementById('sourceBtnLabel').textContent = chip.textContent;
+      closeAllDropdowns();
+    });
+  });
+
+  function closeAllDropdowns(){
+    document.querySelectorAll('.fmt-dropdown.open').forEach(d=>d.classList.remove('open'));
+    document.querySelectorAll('.fmt-btn.open').forEach(b=>b.classList.remove('open'));
+  }
+  function setupPicker(btnId, dropdownId){
+    const btn = document.getElementById(btnId);
+    const dropdown = document.getElementById(dropdownId);
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const wasOpen = dropdown.classList.contains('open');
+      closeAllDropdowns();
+      if(!wasOpen){
+        dropdown.classList.add('open');
+        btn.classList.add('open');
+      }
+    });
+    dropdown.addEventListener('click', e=> e.stopPropagation());
+  }
+  setupPicker('sourceBtn', 'sourceDropdown');
+  setupPicker('targetBtn', 'targetDropdown');
+  document.addEventListener('click', closeAllDropdowns);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeAllDropdowns(); });
+
   document.getElementById('chooseFilesBtn').addEventListener('click', ()=> fileInput.click());
 
   const dropzone = document.getElementById('dropzone');
@@ -351,15 +599,28 @@
   fileInput.addEventListener('change', e=> handleFiles(e.target.files));
 
   /* Сейчас реально работает только конвертация HEIC/HEIF → JPG/PNG на
-     отдельной странице /ru/heic/ (там можно выбрать формат). Отсюда, с главной, файл просто
-     определяется по расширению и пользователь перенаправляется туда;
+     отдельной странице /ru/heic/ (там же лимиты и сама конвертация).
+     Отсюда, с главной, нужно сначала выбрать формат — если не выбран,
+     открываем дропдаун и просим выбрать; если выбран и файл HEIC/HEIF,
+     перенаправляем на /ru/heic/ с уже выбранным форматом в параметре;
      остальные форматы — заглушка с тостом "скоро". */
   function handleFiles(fileList){
     const file = fileList[0];
     if(!file) return;
+
+    if(!targetFormat){
+      showToast('Сначала выберите формат, в который конвертировать');
+      const targetBtn = document.getElementById('targetBtn');
+      const targetDropdown = document.getElementById('targetDropdown');
+      closeAllDropdowns();
+      targetDropdown.classList.add('open');
+      targetBtn.classList.add('open');
+      return;
+    }
+
     if(/\.(heic|heif)$/i.test(file.name)){
       showToast('Обнаружен HEIC-файл — переходим к конвертации…');
-      setTimeout(()=>{ window.location.href = '/ru/heic/'; }, 900);
+      setTimeout(()=>{ window.location.href = `/ru/heic/?to=${selectedTargetCode.toLowerCase()}`; }, 900);
     } else {
       const ext = (file.name.split('.').pop() || 'файл').toUpperCase();
       showToast(`Конвертация формата ${ext} скоро появится — пока доступен HEIC → JPG/PNG`);
