@@ -28,7 +28,22 @@
   header{
     display:flex; justify-content:space-between; align-items:center;
     padding: 18px 6vw; border-bottom:1px solid var(--border);
+    gap:14px;
   }
+  .header-left{ display:flex; align-items:center; gap:14px; }
+
+  /* Кнопка-гамбургер — открывает/закрывает боковой сайдбар */
+  .menu-trigger-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:38px; flex-shrink:0;
+    background: var(--bg-panel); border:1px solid var(--border); border-radius:9px;
+    color: var(--text); cursor:pointer; padding:0;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+  .menu-trigger-btn:hover{ background: var(--bg-input); }
+  .menu-trigger-btn.active{ border-color: var(--accent); color: var(--accent); background: rgba(79,127,255,0.1); }
+  .menu-trigger-btn svg{ width:18px; height:18px; }
+
   .brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; }
   .brand .logo{
     width:28px; height:28px; border-radius:7px;
@@ -127,13 +142,82 @@
     padding: 22px 6vw; text-align:center;
     font-size:12px; color: var(--text-dim);
   }
+
+  /* ===== Боковой сайдбар =====
+     Выезжает слева ПОВЕРХ контента (страница не сдвигается и не сжимается).
+     top берётся из --header-h — реальной высоты шапки, которую JS отслеживает
+     через ResizeObserver, чтобы сайдбар всегда начинался ровно под шапкой,
+     даже если она перенесётся на две строки на узких экранах. */
+  .sidebar-overlay{
+    position:fixed; inset: var(--header-h, 65px) 0 0 0;
+    background: rgba(0,0,0,0.35);
+    opacity:0; pointer-events:none;
+    transition: opacity 0.2s ease;
+    z-index:150;
+  }
+  .sidebar-overlay.open{ opacity:1; pointer-events:auto; }
+
+  .sidebar{
+    position:fixed; top: var(--header-h, 65px); left:0; bottom:0;
+    width:260px; max-width:80vw;
+    background: var(--bg-panel);
+    border-right:1px solid var(--border);
+    box-shadow: 8px 0 28px rgba(0,0,0,0.45);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index:200;
+    overflow-y:auto;
+    padding: 18px 14px;
+    text-align:left;
+  }
+  .sidebar.open{ transform: translateX(0); }
+
+  .sidebar-section{ margin-bottom:22px; }
+  .sidebar-title{
+    font-size:11px; text-transform:uppercase; letter-spacing:0.05em;
+    color: var(--text-dim); padding: 0 10px 8px;
+  }
+  .sidebar-link{
+    display:flex; align-items:center; gap:10px;
+    width:100%; background:none; border:none; color: var(--text);
+    font-size:14px; text-align:left; padding:10px 10px; border-radius:8px;
+    cursor:pointer; transition: background 0.15s ease;
+  }
+  .sidebar-link:hover{ background: var(--bg-input); }
+  .sidebar-link.active{ color: var(--accent); background: rgba(79,127,255,0.1); }
 </style>
 </head>
 <body>
-<header>
-  <div class="brand"><span class="logo">🗂</span> ConvertHub</div>
+<header id="siteHeader">
+  <div class="header-left">
+    <button class="menu-trigger-btn" id="menuTriggerBtn" aria-label="Открыть меню" aria-expanded="false">
+      <svg id="menuTriggerIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <line x1="4" y1="6" x2="20" y2="6"></line>
+        <line x1="4" y1="12" x2="20" y2="12"></line>
+        <line x1="4" y1="18" x2="20" y2="18"></line>
+      </svg>
+    </button>
+    <div class="brand"><span class="logo">🗂</span> ConvertHub</div>
+  </div>
   <div id="counterBadge">…</div>
 </header>
+
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<aside class="sidebar" id="sidebar" aria-hidden="true">
+  <div class="sidebar-section">
+    <div class="sidebar-title">Конвертация</div>
+    <button class="sidebar-link active" data-action="scroll-top">📷 HEIC → JPG / PNG</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-title">Аккаунт</div>
+    <button class="sidebar-link" data-action="scroll-paywall">💳 Тарифы и подписка</button>
+  </div>
+  <div class="sidebar-section">
+    <div class="sidebar-title">Информация</div>
+    <button class="sidebar-link" data-action="none">🔒 Конфиденциальность</button>
+    <button class="sidebar-link" data-action="none">✉️ Поддержка</button>
+  </div>
+</aside>
 
 <main>
   <h1>HEIC → JPG / PNG за секунды</h1>
@@ -175,6 +259,57 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
 <script>
+  /* ===== Сайдбар ===== */
+  (function initSidebar(){
+    const header = document.getElementById('siteHeader');
+    const btn = document.getElementById('menuTriggerBtn');
+    const icon = document.getElementById('menuTriggerIcon');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    // Реальная высота шапки в CSS-переменной --header-h, чтобы сайдбар
+    // всегда начинался ровно под шапкой (даже если она перенесётся на
+    // вторую строку на узких экранах или при увеличении масштаба страницы).
+    function syncHeaderHeight(){
+      document.documentElement.style.setProperty('--header-h', header.offsetHeight + 'px');
+    }
+    syncHeaderHeight();
+    if(typeof ResizeObserver !== 'undefined'){
+      new ResizeObserver(syncHeaderHeight).observe(header);
+    } else {
+      window.addEventListener('resize', syncHeaderHeight);
+    }
+
+    function setOpen(open){
+      sidebar.classList.toggle('open', open);
+      overlay.classList.toggle('open', open);
+      btn.classList.toggle('active', open);
+      btn.setAttribute('aria-expanded', String(open));
+      sidebar.setAttribute('aria-hidden', String(!open));
+      icon.innerHTML = open
+        ? '<line x1="6" y1="6" x2="18" y2="18"></line><line x1="18" y1="6" x2="6" y2="18"></line>'
+        : '<line x1="4" y1="6" x2="20" y2="6"></line><line x1="4" y1="12" x2="20" y2="12"></line><line x1="4" y1="18" x2="20" y2="18"></line>';
+    }
+
+    btn.addEventListener('click', ()=> setOpen(!sidebar.classList.contains('open')));
+    overlay.addEventListener('click', ()=> setOpen(false));
+    document.addEventListener('keydown', e=>{
+      if(e.key === 'Escape') setOpen(false);
+    });
+
+    sidebar.querySelectorAll('.sidebar-link').forEach(link=>{
+      link.addEventListener('click', ()=>{
+        const action = link.dataset.action;
+        if(action === 'scroll-top'){
+          document.querySelector('.dropzone')?.scrollIntoView({behavior:'smooth', block:'center'});
+        } else if(action === 'scroll-paywall'){
+          document.querySelector('.paywall')?.scrollIntoView({behavior:'smooth', block:'center'});
+        }
+        setOpen(false);
+      });
+    });
+  })();
+
   const FREE_LIMIT = 5;
 
   function getToken(){
