@@ -7,16 +7,28 @@
 <meta name="description" content="Конвертируйте электронные книги между форматами EPUB, FB2, TXT и PDB прямо в браузере — без загрузки на сервер.">
 <style>
   :root{
-    --bg: #0e0f13;
-    --bg-panel: #16181f;
-    --bg-input: #1c1f28;
-    --border: #262a35;
+    --bg: #0b0e18;
+    --bg-panel: #0b0e18;
+    --bg-elevated: #151c31;
+    --bg-input: #191d2a;
+    --border: #262a3d;
+    --border-soft: rgba(255,255,255,0.06);
     --text: #e8e9ed;
     --text-dim: #8b8f9c;
-    --accent: #4f7fff;
-    --accent-dim: #3a5fd0;
+    --accent: #1f56dc;
+    --accent-dim: #2c5bce;
+    --accent-icon: #2c5bce;
+    --border-grad-1: #2c5bce;
+    --border-grad-2: #4b4391;
+    --accent-glow: rgba(31,86,220,0.28);
     --ok: #3ecf8e;
     --err: #f0554d;
+    --header-h: 60px;
+    --rail-w: 56px;
+    --sidebar-w: 248px;
+    --sidebar-w-collapsed: 0px;
+    --radius-lg: 20px;
+    --radius-md: 14px;
   }
   *{box-sizing:border-box; margin:0; padding:0;}
   body{
@@ -41,14 +53,14 @@
     transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   }
   .menu-trigger-btn:hover{ background: var(--bg-input); }
-  .menu-trigger-btn.active{ border-color: var(--accent); color: var(--accent); background: rgba(79,127,255,0.1); }
+  .menu-trigger-btn.active{ border-color: var(--accent); color: var(--accent); background: rgba(31,86,220,0.1); }
   .menu-trigger-btn svg{ width:18px; height:18px; }
 
   .brand{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:16px; text-decoration:none; color: var(--text); }
   .brand:visited{ color: var(--text); }
   .brand .logo{
     width:28px; height:28px; border-radius:7px;
-    background: linear-gradient(135deg, var(--accent), #7aa0ff);
+    background: linear-gradient(135deg, var(--accent), #2c5bce);
     display:flex; align-items:center; justify-content:center; font-size:14px;
   }
   #counterBadge{
@@ -71,7 +83,7 @@
     text-align:center;
     background-color: #1a1c24;
     background-image:
-      radial-gradient(circle at 15% 0%, rgba(79,127,255,0.14), transparent 55%),
+      radial-gradient(circle at 15% 0%, rgba(31,86,220,0.14), transparent 55%),
       radial-gradient(circle at 100% 100%, rgba(122,160,255,0.10), transparent 50%),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.025 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
     background-repeat: no-repeat, no-repeat, repeat;
@@ -134,7 +146,7 @@
   }
   .fmt-btn svg{ width:16px; height:16px; transition: transform 0.15s ease; flex-shrink:0; }
   .fmt-btn.open svg{ transform: rotate(180deg); }
-  .fmt-btn.dark{ background:#0e0f13; color:#fff; border:1px solid var(--border); }
+  .fmt-btn.dark{ background:#0b0e18; color:#fff; border:1px solid var(--border); }
   .fmt-btn.light{ background:#fff; color:#111; }
 
   .fmt-dropdown{
@@ -202,7 +214,7 @@
 
   .cw-toast{
     position:fixed; left:50%; bottom:24px; transform: translate(-50%, 12px);
-    background:#1c1f28; border:1px solid var(--border); color:var(--text);
+    background:#191d2a; border:1px solid var(--border); color:var(--text);
     padding:10px 18px; border-radius:9px; font-size:13px;
     opacity:0; pointer-events:none; transition: opacity 0.2s ease, transform 0.2s ease;
     z-index:500; box-shadow:0 10px 30px rgba(0,0,0,0.5);
@@ -312,7 +324,7 @@
     cursor:pointer; transition: background 0.15s ease; text-decoration:none;
   }
   .sidebar-link:hover{ background: var(--bg-input); }
-  .sidebar-link.active{ color: var(--accent); background: rgba(79,127,255,0.1); }
+  .sidebar-link.active{ color: var(--accent); background: rgba(31,86,220,0.1); }
 </style>
 </head>
 <body>
