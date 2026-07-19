@@ -622,15 +622,14 @@
 
   // Реально работает сейчас конвертация электронных книг: TXT, EPUB, FB2, PDB —
   // парсинг источника (TXT/MD/HTML/FB2/EPUB) и сборка целевого файла целиком
-  // в браузере (см. parseBook / encodeBook ниже). MOBI/AZW3/LRF/RB/SNB/TCR —
-  // показаны для вида (roadmap), клик даёт тост "скоро": это либо закрытые
-  // проприетарные форматы (LRF), либо форматы, для которых нельзя гарантировать
-  // корректный файл без дополнительных библиотек (MOBI/AZW3).
+  // в браузере (см. parseBook / encodeBook ниже). MOBI/AZW3/LRF/RB/SNB/TCR были
+  // убраны из списка: это либо закрытые проприетарные форматы (LRF), либо
+  // форматы, для которых нельзя гарантировать корректный файл без
+  // дополнительных библиотек (MOBI/AZW3) — показывать их пунктом меню без
+  // реальной конвертации не имеет смысла.
   const EBOOK_FORMATS = [
     {code:'EPUB', enabled:true}, {code:'FB2', enabled:true}, {code:'TXT', enabled:true},
-    {code:'PDB', enabled:true}, {code:'MOBI', enabled:false}, {code:'AZW3', enabled:false},
-    {code:'LRF', enabled:false}, {code:'RB', enabled:false}, {code:'SNB', enabled:false},
-    {code:'TCR', enabled:false},
+    {code:'PDB', enabled:true},
   ];
 
   // Остальные разделы здесь не в фокусе страницы — показаны для навигации по

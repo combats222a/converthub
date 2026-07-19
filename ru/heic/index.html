@@ -618,10 +618,15 @@
   let selectedTargetCode = null;
 
   // Список форматов "как в примере" — реально рабочие сейчас: JPG, PNG, WEBP,
-  // BMP, ICO, JFIF, JPE, JPEG, JIF, JPS, TGA, PPM, PGM, PBM, WBMP, RGB, SGI,
-  // CUR, HDR, GIF, PSD, TIFF (конвертация через canvas в браузере, см.
-  // encodeCanvasToFormat), остальное показано для вида (roadmap) и по клику
-  // даёт тост "скоро".
+  // BMP, ICO, JFIF, JFI, JPE, JPEG, JIF, JPS, TGA, PPM, PGM, PBM, PNM, PAM,
+  // WBMP, RGB, SGI, RAS, SUN, RGBA, CUR, HDR, GIF, PSD, TIFF, PFM, MTV, XBM,
+  // XPM, PICON (конвертация через canvas в браузере, см. encodeCanvasToFormat
+  // и байтовые энкодеры выше неё — все побайтово провалидированы через
+  // ImageMagick/Pillow round-trip перед вставкой сюда). Остальное — форматы,
+  // для которых без сжатия/кодека (JPEG2000, AVIF/AV1, JBIG, CCITT-факс,
+  // PhotoCD и т.п.) нельзя честно собрать корректный файл в браузере без
+  // тяжёлых доп.библиотек — показаны для вида (roadmap) и по клику дают
+  // тост "скоро".
   const IMAGE_FORMATS = [
     {code:'JPG', enabled:true}, {code:'PNG', enabled:true}, {code:'JPEG', enabled:true},
     {code:'WEBP', enabled:true}, {code:'SVG', enabled:false}, {code:'TIFF', enabled:true},
@@ -635,16 +640,16 @@
     {code:'JP2', enabled:false}, {code:'TGA', enabled:true}, {code:'DDS', enabled:false},
     {code:'PCX', enabled:false}, {code:'PBM', enabled:true}, {code:'FAX', enabled:false},
     {code:'FTS', enabled:false}, {code:'G3', enabled:false}, {code:'MNG', enabled:false},
-    {code:'MTV', enabled:false}, {code:'OTB', enabled:false}, {code:'PAL', enabled:false},
-    {code:'PALM', enabled:false}, {code:'PAM', enabled:false}, {code:'PCD', enabled:false},
-    {code:'PCT', enabled:false}, {code:'PFM', enabled:false}, {code:'PICON', enabled:false},
-    {code:'PICT', enabled:false}, {code:'PNM', enabled:false}, {code:'RAS', enabled:false},
-    {code:'RGBA', enabled:false}, {code:'RGBO', enabled:false}, {code:'SGI', enabled:true},
-    {code:'SUN', enabled:false}, {code:'UYVY', enabled:false}, {code:'VIFF', enabled:false},
-    {code:'XBM', enabled:false}, {code:'XPM', enabled:false}, {code:'XV', enabled:false},
+    {code:'MTV', enabled:true}, {code:'OTB', enabled:false}, {code:'PAL', enabled:false},
+    {code:'PALM', enabled:false}, {code:'PAM', enabled:true}, {code:'PCD', enabled:false},
+    {code:'PCT', enabled:false}, {code:'PFM', enabled:true}, {code:'PICON', enabled:true},
+    {code:'PICT', enabled:false}, {code:'PNM', enabled:true}, {code:'RAS', enabled:true},
+    {code:'RGBA', enabled:true}, {code:'RGBO', enabled:false}, {code:'SGI', enabled:true},
+    {code:'SUN', enabled:true}, {code:'UYVY', enabled:false}, {code:'VIFF', enabled:false},
+    {code:'XBM', enabled:true}, {code:'XPM', enabled:true}, {code:'XV', enabled:false},
     {code:'XWD', enabled:false}, {code:'YUV', enabled:false}, {code:'JBIG', enabled:false},
     {code:'G4', enabled:false}, {code:'RGF', enabled:false}, {code:'SIX', enabled:false},
-    {code:'SIXEL', enabled:false}, {code:'VIPS', enabled:false}, {code:'JFI', enabled:false},
+    {code:'SIXEL', enabled:false}, {code:'VIPS', enabled:false}, {code:'JFI', enabled:true},
     {code:'PGX', enabled:false},
   ];
 
@@ -657,9 +662,7 @@
     doc: toFormats(['PDF','DOC','DOCX','XPS','DOCM','DOTX','ABW','AW','ODT','RTF','DOT','DOTM','DJVU','DBK','KWD','SXW','OXPS']),
     ebook: [
       {code:'EPUB', enabled:true}, {code:'FB2', enabled:true}, {code:'TXT', enabled:true},
-      {code:'PDB', enabled:true}, {code:'MOBI', enabled:false}, {code:'AZW3', enabled:false},
-      {code:'LRF', enabled:false}, {code:'RB', enabled:false}, {code:'SNB', enabled:false},
-      {code:'TCR', enabled:false},
+      {code:'PDB', enabled:true},
     ],
     font: toFormats(['PS']),
     vector: toFormats(['SVG','EPS','AI','PLT','SK','FIG','PS','EMF','WMF','CGM','SK1']),
@@ -714,10 +717,11 @@
   }
   renderFmtGrid('');
 
-  // Если пришли с главной с уже выбранным форматом (?to=jpg/png) — применяем сразу.
+  // Если пришли с главной с уже выбранным форматом (?to=<код>) — применяем сразу,
+  // если этот формат реально включён в IMAGE_FORMATS.
   (function applyIncomingFormat(){
     const to = new URLSearchParams(location.search).get('to');
-    if(to && (to.toLowerCase() === 'jpg' || to.toLowerCase() === 'png')){
+    if(to && IMAGE_FORMATS.some(f => f.enabled && f.code === to.toUpperCase())){
       selectTargetFormat(to.toUpperCase());
       history.replaceState({}, '', location.pathname);
     }
@@ -819,12 +823,15 @@
   // получаем PNG (без потерь), рисуем на canvas, а из canvas уже кодируем
   // в конечный формат — так один и тот же пайплайн покрывает сразу все
   // остальные форматы без лишних зависимостей.
-  // Все энкодеры ниже (BMP/TGA/PPM/PGM/PBM/WBMP/SGI/HDR/PSD/TIFF/GIF/ICO/CUR)
-  // побайтово провалидированы через Pillow/ImageMagick перед вставкой сюда.
+  // Все энкодеры ниже (BMP/TGA/PPM/PGM/PBM/PNM/PAM/MTV/RGBA/RAS/SUN/PFM/XBM/
+  // XPM/WBMP/SGI/HDR/PSD/TIFF/GIF/ICO/CUR) побайтово провалидированы через
+  // Pillow/ImageMagick перед вставкой сюда.
   const EXT_MAP = {
     JPG:'jpg', PNG:'png', WEBP:'webp', BMP:'bmp', ICO:'ico', JFIF:'jfif', JPE:'jpe',
     JPEG:'jpeg', JIF:'jif', JPS:'jps', TGA:'tga', PPM:'ppm', PGM:'pgm', PBM:'pbm',
-    WBMP:'wbmp', RGB:'rgb', SGI:'sgi', CUR:'cur', HDR:'hdr', GIF:'gif', PSD:'psd', TIFF:'tiff'
+    WBMP:'wbmp', RGB:'rgb', SGI:'sgi', CUR:'cur', HDR:'hdr', GIF:'gif', PSD:'psd', TIFF:'tiff',
+    JFI:'jfi', PNM:'pnm', PAM:'pam', MTV:'mtv', RGBA:'rgba', RAS:'ras', SUN:'sun',
+    PFM:'pfm', XBM:'xbm', XPM:'xpm', PICON:'xpm'
   };
 
   function loadImage(blob){
@@ -1257,11 +1264,154 @@
     return new Blob([buf], { type: isCursor ? 'image/x-cursor' : 'image/x-icon' });
   }
 
+  // ---------- PNM (Portable AnyMap, цветной вариант — идентичен PPM P6) ----------
+  function encodePNM(canvas){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const header = new TextEncoder().encode(`P6\n${w} ${h}\n255\n`);
+    const pixels = new Uint8Array(w * h * 3);
+    let p = 0;
+    for(let i = 0; i < data.length; i += 4){
+      pixels[p++] = data[i]; pixels[p++] = data[i+1]; pixels[p++] = data[i+2];
+    }
+    return new Blob([header, pixels], { type: 'image/x-portable-anymap' });
+  }
+
+  // ---------- PAM (Portable Arbitrary Map, RGBA — с сохранением альфа-канала) ----------
+  function encodePAM(canvas){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const header = new TextEncoder().encode(`P7\nWIDTH ${w}\nHEIGHT ${h}\nDEPTH 4\nMAXVAL 255\nTUPLTYPE RGB_ALPHA\nENDHDR\n`);
+    return new Blob([header, data], { type: 'image/x-portable-arbitrarymap' });
+  }
+
+  // ---------- MTV (MTV Raytracer image) ----------
+  function encodeMTV(canvas){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const header = new TextEncoder().encode(`${w} ${h}\n`);
+    const pixels = new Uint8Array(w * h * 3);
+    let p = 0;
+    for(let i = 0; i < data.length; i += 4){
+      pixels[p++] = data[i]; pixels[p++] = data[i+1]; pixels[p++] = data[i+2];
+    }
+    return new Blob([header, pixels], { type: 'image/x-mtv' });
+  }
+
+  // ---------- RGBA (сырой поканальный дамп, без заголовка) ----------
+  function encodeRGBAraw(canvas){
+    const data = getRGBAData(canvas);
+    return new Blob([data], { type: 'image/x-rgba' });
+  }
+
+  // ---------- RAS / SUN (Sun Rasterfile, 32-бит ARGB, тип RT_FORMAT_RGB) ----------
+  function encodeRAS(canvas){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const header = new ArrayBuffer(32);
+    const hv = new DataView(header);
+    hv.setUint32(0, 0x59a66a95, false);
+    hv.setUint32(4, w, false);
+    hv.setUint32(8, h, false);
+    hv.setUint32(12, 32, false);
+    hv.setUint32(16, w*h*4, false);
+    hv.setUint32(20, 3, false); // RT_FORMAT_RGB
+    hv.setUint32(24, 0, false);
+    hv.setUint32(28, 0, false);
+    const pixels = new Uint8Array(w*h*4);
+    let p = 0;
+    for(let i = 0; i < data.length; i += 4){
+      pixels[p++] = data[i+3]; pixels[p++] = data[i]; pixels[p++] = data[i+1]; pixels[p++] = data[i+2];
+    }
+    return new Blob([header, pixels], { type: 'image/x-sun-raster' });
+  }
+
+  // ---------- PFM (Portable Float Map, big-endian, строки снизу вверх) ----------
+  function encodePFM(canvas){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const header = new TextEncoder().encode(`PF\n${w} ${h}\n1.0\n`);
+    const body = new ArrayBuffer(w*h*3*4);
+    const bv = new DataView(body);
+    let p = 0;
+    for(let y = h-1; y >= 0; y--){
+      for(let x = 0; x < w; x++){
+        const i = (y*w+x)*4;
+        bv.setFloat32(p, data[i]/255, false); p += 4;
+        bv.setFloat32(p, data[i+1]/255, false); p += 4;
+        bv.setFloat32(p, data[i+2]/255, false); p += 4;
+      }
+    }
+    return new Blob([header, body], { type: 'image/x-portable-floatmap' });
+  }
+
+  // ---------- XBM (X Bitmap, монохромный, бит — младший первым в байте) ----------
+  function encodeXBM(canvas, name){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const rowBytes = Math.ceil(w / 8);
+    const bytes = new Uint8Array(rowBytes * h);
+    for(let y = 0; y < h; y++){
+      for(let x = 0; x < w; x++){
+        const i = (y*w+x)*4;
+        const lum = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
+        if(lum < 128) bytes[y*rowBytes + (x>>3)] |= (1 << (x & 7));
+      }
+    }
+    let s = `#define ${name}_width ${w}\n#define ${name}_height ${h}\nstatic char ${name}_bits[] = {\n  `;
+    const hexvals = [];
+    for(let i = 0; i < bytes.length; i++) hexvals.push('0x' + bytes[i].toString(16).toUpperCase().padStart(2,'0'));
+    s += hexvals.join(', ') + ' };\n';
+    return new Blob([s], { type: 'image/x-xbitmap' });
+  }
+
+  // ---------- XPM / PICON (X Pixmap, текстовый формат с таблицей цветов) ----------
+  // Без ограничения на число цветов файл на фото с плавным градиентом может
+  // получиться большим и не мгновенно собраться — поэтому для очень больших
+  // изображений просим уменьшить размер, чтобы не подвешивать вкладку.
+  const XPM_MAX_PIXELS = 500000;
+  const XPM_CHARS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.,;:!?-+=';
+  function xpmSymbol(idx, cpp){
+    let s = '', n = idx;
+    for(let k = 0; k < cpp; k++){ s = XPM_CHARS[n % XPM_CHARS.length] + s; n = Math.floor(n / XPM_CHARS.length); }
+    return s;
+  }
+  function encodeXPM(canvas, name){
+    const w = canvas.width, h = canvas.height;
+    if(w*h > XPM_MAX_PIXELS) throw new Error('Изображение слишком большое для XPM/PICON (формат без сжатия цветов) — попробуйте уменьшить размер');
+    const data = getRGBAData(canvas);
+    const keyOf = i => data[i]+','+data[i+1]+','+data[i+2]+','+data[i+3];
+    const colorMap = new Map();
+    for(let i = 0; i < data.length; i += 4){
+      const key = keyOf(i);
+      if(!colorMap.has(key)) colorMap.set(key, colorMap.size);
+    }
+    const nColors = colorMap.size;
+    let cpp = 1;
+    while(Math.pow(XPM_CHARS.length, cpp) < nColors) cpp++;
+    const symbols = new Map();
+    let idx = 0;
+    for(const key of colorMap.keys()){ symbols.set(key, xpmSymbol(idx, cpp)); idx++; }
+
+    let out = `/* XPM */\nstatic char *${name}[] = {\n"${w} ${h} ${nColors} ${cpp}",\n`;
+    for(const key of colorMap.keys()){
+      const [r,g,b,a] = key.split(',').map(Number);
+      const sym = symbols.get(key);
+      out += a < 128 ? `"${sym} c None",\n` : `"${sym} c #${[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}",\n`;
+    }
+    for(let y = 0; y < h; y++){
+      let line = '';
+      for(let x = 0; x < w; x++) line += symbols.get(keyOf((y*w+x)*4));
+      out += `"${line}${y === h-1 ? '"\n};\n' : '",\n'}`;
+    }
+    return new Blob([out], { type: 'image/x-xpixmap' });
+  }
+
   async function encodeCanvasToFormat(canvas, code){
     switch(code){
       case 'PNG':
         return canvasToBlob(canvas, 'image/png');
-      case 'JPG': case 'JFIF': case 'JPE': case 'JPEG': case 'JIF': case 'JPS':
+      case 'JPG': case 'JFIF': case 'JFI': case 'JPE': case 'JPEG': case 'JIF': case 'JPS':
         return canvasToBlob(canvas, 'image/jpeg', 0.92);
       case 'WEBP': {
         const blob = await canvasToBlob(canvas, 'image/webp', 0.92);
@@ -1273,6 +1423,14 @@
       case 'PPM': return encodePPM(canvas);
       case 'PGM': return encodePGM(canvas);
       case 'PBM': return encodePBM(canvas);
+      case 'PNM': return encodePNM(canvas);
+      case 'PAM': return encodePAM(canvas);
+      case 'MTV': return encodeMTV(canvas);
+      case 'RGBA': return encodeRGBAraw(canvas);
+      case 'RAS': case 'SUN': return encodeRAS(canvas);
+      case 'PFM': return encodePFM(canvas);
+      case 'XBM': return encodeXBM(canvas, 'image');
+      case 'XPM': case 'PICON': return encodeXPM(canvas, 'image');
       case 'WBMP': return encodeWBMP(canvas);
       case 'RGB': case 'SGI': return encodeSGI(canvas);
       case 'HDR': return encodeHDR(canvas);
