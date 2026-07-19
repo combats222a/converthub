@@ -289,6 +289,7 @@
   <div class="sidebar-section">
     <div class="sidebar-title">Конвертация</div>
     <a class="sidebar-link" href="/ru/heic/">📷 HEIC → Конвертация в любой формат</a>
+    <a class="sidebar-link" href="/ru/ebook/">📚 Книги → Конвертация в любой формат</a>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Аккаунт</div>
@@ -495,7 +496,12 @@
   const FORMATS = {
     image: IMAGE_FORMATS,
     doc: toFormats(['PDF','DOC','DOCX','XPS','DOCM','DOTX','ABW','AW','ODT','RTF','DOT','DOTM','DJVU','DBK','KWD','SXW','OXPS']),
-    ebook: toFormats(['PDB','EPUB','AZW3','FB2','LRF','MOBI','RB','SNB','TCR']),
+    ebook: [
+      {code:'EPUB', enabled:true}, {code:'FB2', enabled:true}, {code:'TXT', enabled:true},
+      {code:'PDB', enabled:true}, {code:'MOBI', enabled:false}, {code:'AZW3', enabled:false},
+      {code:'LRF', enabled:false}, {code:'RB', enabled:false}, {code:'SNB', enabled:false},
+      {code:'TCR', enabled:false},
+    ],
     font: toFormats(['PS']),
     vector: toFormats(['SVG','EPS','AI','PLT','SK','FIG','PS','EMF','WMF','CGM','SK1']),
     cad: toFormats(['DXF']),
@@ -505,7 +511,7 @@
 
   function selectTargetFormat(code){
     selectedTargetCode = code;
-    targetFormat = code === 'PNG' ? 'png' : 'jpeg';
+    targetFormat = code;
     document.getElementById('targetBtnLabel').textContent = code;
     renderFmtGrid(document.getElementById('fmtSearch').value);
     closeAllDropdowns();
@@ -547,7 +553,7 @@
       cat.classList.add('active');
       document.getElementById('fmtSearch').value = '';
       renderFmtGrid('');
-      if(key !== 'image'){
+      if(key !== 'image' && key !== 'ebook'){
         showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
       }
     });
@@ -598,12 +604,14 @@
   dropzone.addEventListener('drop', e=> handleFiles(e.dataTransfer.files));
   fileInput.addEventListener('change', e=> handleFiles(e.target.files));
 
-  /* Сейчас реально работает только конвертация HEIC/HEIF → JPG/PNG на
-     отдельной странице /ru/heic/ (там же лимиты и сама конвертация).
-     Отсюда, с главной, нужно сначала выбрать формат — если не выбран,
-     открываем дропдаун и просим выбрать; если выбран и файл HEIC/HEIF,
-     перенаправляем на /ru/heic/ с уже выбранным форматом в параметре;
-     остальные форматы — заглушка с тостом "скоро". */
+  /* Реально работает конвертация HEIC/HEIF → JPG/PNG и др. на /ru/heic/, а
+     также конвертация книг (TXT/MD/HTML/FB2/EPUB → EPUB/FB2/TXT/PDB) на
+     /ru/ebook/ (там же лимиты и сама конвертация — см. соответствующие
+     страницы). Отсюда, с главной, нужно сначала выбрать формат — если не
+     выбран, открываем дропдаун и просим выбрать; дальше перенаправляем на
+     нужную страницу с уже выбранным форматом в параметре; остальные форматы
+     — заглушка с тостом "скоро". */
+  const EBOOK_SOURCE_EXT = /\.(txt|md|markdown|html?|fb2|epub)$/i;
   function handleFiles(fileList){
     const file = fileList[0];
     if(!file) return;
@@ -621,6 +629,9 @@
     if(/\.(heic|heif)$/i.test(file.name)){
       showToast('Обнаружен HEIC-файл — переходим к конвертации…');
       setTimeout(()=>{ window.location.href = `/ru/heic/?to=${selectedTargetCode.toLowerCase()}`; }, 900);
+    } else if(currentCategory === 'ebook' && EBOOK_SOURCE_EXT.test(file.name)){
+      showToast('Переходим к конвертации книги…');
+      setTimeout(()=>{ window.location.href = `/ru/ebook/?to=${selectedTargetCode.toLowerCase()}`; }, 900);
     } else {
       const ext = (file.name.split('.').pop() || 'файл').toUpperCase();
       showToast(`Конвертация формата ${ext} скоро появится — пока доступен HEIC → JPG/PNG`);

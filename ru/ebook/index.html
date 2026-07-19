@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HEIC — конвертируйте в любой формат — ConvertHub</title>
-<meta name="description" content="Конвертируйте HEIC-фото с iPhone в JPG, PNG и другие форматы. Выберите нужный формат — конвертация происходит прямо в браузере.">
+<title>Конвертер электронных книг — ConvertHub</title>
+<meta name="description" content="Конвертируйте электронные книги между форматами EPUB, FB2, TXT и PDB прямо в браузере — без загрузки на сервер.">
 <style>
   :root{
     --bg: #0e0f13;
@@ -338,8 +338,8 @@
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Конвертация</div>
-    <button class="sidebar-link active" data-action="scroll-top">📷 HEIC → Конвертация в любой формат</button>
-    <a class="sidebar-link" href="/ru/ebook/">📚 Книги → Конвертация в любой формат</a>
+    <a class="sidebar-link" href="/ru/heic/">📷 HEIC → Конвертация в любой формат</a>
+    <button class="sidebar-link active" data-action="scroll-top">📚 Книги → Конвертация в любой формат</button>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Аккаунт</div>
@@ -353,11 +353,11 @@
 </aside>
 
 <main>
-  <h1>HEIC → выберите формат</h1>
+  <h1>Электронные книги → выберите формат</h1>
   <p class="sub">Конвертация происходит прямо в браузере. Файлы никуда не загружаются.</p>
 
   <div class="convert-widget" id="dropzone">
-    <input type="file" id="fileInput" accept=".heic,.heif" multiple style="display:none">
+    <input type="file" id="fileInput" accept=".txt,.md,.markdown,.html,.htm,.fb2,.epub" multiple style="display:none">
 
     <!-- Плашка со статистикой — цифры пока заглушка, замени на реальные
          данные из бэкенда (например, отдельный /api/stats), когда появится
@@ -387,12 +387,15 @@
       <div class="cw-formats">
         <div class="fmt-picker" id="sourcePicker">
           <button type="button" class="fmt-btn dark" id="sourceBtn">
-            <span id="sourceBtnLabel">HEIC</span>
+            <span id="sourceBtnLabel">TXT</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="fmt-dropdown fmt-dropdown-source" id="sourceDropdown">
-            <button type="button" class="fmt-chip">HEIC</button>
-            <button type="button" class="fmt-chip">HEIF</button>
+            <button type="button" class="fmt-chip">TXT</button>
+            <button type="button" class="fmt-chip">MD</button>
+            <button type="button" class="fmt-chip">HTML</button>
+            <button type="button" class="fmt-chip">FB2</button>
+            <button type="button" class="fmt-chip">EPUB</button>
           </div>
         </div>
 
@@ -410,9 +413,9 @@
             </div>
             <div class="fmt-body">
               <div class="fmt-categories" id="fmtCategories">
-                <button type="button" class="fmt-cat active" data-cat="image">Изображение <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+                <button type="button" class="fmt-cat" data-cat="image">Изображение <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
                 <button type="button" class="fmt-cat" data-cat="doc">Документ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
-                <button type="button" class="fmt-cat" data-cat="ebook">Электронная книга <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+                <button type="button" class="fmt-cat active" data-cat="ebook">Электронная книга <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
                 <button type="button" class="fmt-cat" data-cat="font">Шрифт <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
                 <button type="button" class="fmt-cat" data-cat="vector">Вектор <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
                 <button type="button" class="fmt-cat" data-cat="cad">CAD <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
@@ -424,7 +427,7 @@
       </div>
     </div>
 
-    <div class="cw-hint" id="dzHint">Перетащите файлы сюда · 1 GB максимальный размер файла или <a href="#" id="registerLink">Регистрация</a></div>
+    <div class="cw-hint" id="dzHint">Перетащите файлы сюда · TXT, MD, HTML, FB2, EPUB или <a href="#" id="registerLink">Регистрация</a></div>
   </div>
 
   <div class="paywall" id="paywall">
@@ -450,7 +453,7 @@
 
 <footer>ConvertHub — без сервера, без слежки, без очереди</footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
   /* ===== Сайдбар ===== */
   (function initSidebar(){
@@ -617,56 +620,33 @@
   let targetFormat = null; // пока пользователь не выбрал формат — конвертация недоступна
   let selectedTargetCode = null;
 
-  // Список форматов "как в примере" — реально рабочие сейчас: JPG, PNG, WEBP,
-  // BMP, ICO, JFIF, JPE, JPEG, JIF, JPS, TGA, PPM, PGM, PBM, WBMP, RGB, SGI,
-  // CUR, HDR, GIF, PSD, TIFF (конвертация через canvas в браузере, см.
-  // encodeCanvasToFormat), остальное показано для вида (roadmap) и по клику
-  // даёт тост "скоро".
-  const IMAGE_FORMATS = [
-    {code:'JPG', enabled:true}, {code:'PNG', enabled:true}, {code:'JPEG', enabled:true},
-    {code:'WEBP', enabled:true}, {code:'SVG', enabled:false}, {code:'TIFF', enabled:true},
-    {code:'GIF', enabled:true}, {code:'BMP', enabled:true}, {code:'PSD', enabled:true},
-    {code:'HDR', enabled:true}, {code:'JBG', enabled:false}, {code:'JPE', enabled:true},
-    {code:'ICO', enabled:true}, {code:'PDB', enabled:false}, {code:'AVIF', enabled:false},
-    {code:'JFIF', enabled:true}, {code:'RGB', enabled:true}, {code:'JPS', enabled:true},
-    {code:'CUR', enabled:true}, {code:'EXR', enabled:false}, {code:'JIF', enabled:true},
-    {code:'HRZ', enabled:false}, {code:'WBMP', enabled:true}, {code:'MAP', enabled:false},
-    {code:'PPM', enabled:true}, {code:'IPL', enabled:false}, {code:'PGM', enabled:true},
-    {code:'JP2', enabled:false}, {code:'TGA', enabled:true}, {code:'DDS', enabled:false},
-    {code:'PCX', enabled:false}, {code:'PBM', enabled:true}, {code:'FAX', enabled:false},
-    {code:'FTS', enabled:false}, {code:'G3', enabled:false}, {code:'MNG', enabled:false},
-    {code:'MTV', enabled:false}, {code:'OTB', enabled:false}, {code:'PAL', enabled:false},
-    {code:'PALM', enabled:false}, {code:'PAM', enabled:false}, {code:'PCD', enabled:false},
-    {code:'PCT', enabled:false}, {code:'PFM', enabled:false}, {code:'PICON', enabled:false},
-    {code:'PICT', enabled:false}, {code:'PNM', enabled:false}, {code:'RAS', enabled:false},
-    {code:'RGBA', enabled:false}, {code:'RGBO', enabled:false}, {code:'SGI', enabled:true},
-    {code:'SUN', enabled:false}, {code:'UYVY', enabled:false}, {code:'VIFF', enabled:false},
-    {code:'XBM', enabled:false}, {code:'XPM', enabled:false}, {code:'XV', enabled:false},
-    {code:'XWD', enabled:false}, {code:'YUV', enabled:false}, {code:'JBIG', enabled:false},
-    {code:'G4', enabled:false}, {code:'RGF', enabled:false}, {code:'SIX', enabled:false},
-    {code:'SIXEL', enabled:false}, {code:'VIPS', enabled:false}, {code:'JFI', enabled:false},
-    {code:'PGX', enabled:false},
+  // Реально работает сейчас конвертация электронных книг: TXT, EPUB, FB2, PDB —
+  // парсинг источника (TXT/MD/HTML/FB2/EPUB) и сборка целевого файла целиком
+  // в браузере (см. parseBook / encodeBook ниже). MOBI/AZW3/LRF/RB/SNB/TCR —
+  // показаны для вида (roadmap), клик даёт тост "скоро": это либо закрытые
+  // проприетарные форматы (LRF), либо форматы, для которых нельзя гарантировать
+  // корректный файл без дополнительных библиотек (MOBI/AZW3).
+  const EBOOK_FORMATS = [
+    {code:'EPUB', enabled:true}, {code:'FB2', enabled:true}, {code:'TXT', enabled:true},
+    {code:'PDB', enabled:true}, {code:'MOBI', enabled:false}, {code:'AZW3', enabled:false},
+    {code:'LRF', enabled:false}, {code:'RB', enabled:false}, {code:'SNB', enabled:false},
+    {code:'TCR', enabled:false},
   ];
 
-  // Заглушки-списки для остальных разделов — коды форматов взяты из примера,
-  // все пока неактивны (клик даёт тост "скоро"), реально работает только
-  // раздел "Изображение" → JPG/PNG.
+  // Остальные разделы здесь не в фокусе страницы — показаны для навигации по
+  // общему списку форматов, но неактивны на этой странице (для изображений
+  // есть отдельный конвертер /ru/heic/).
   function toFormats(codes){ return codes.map(code => ({code, enabled:false})); }
   const FORMATS = {
-    image: IMAGE_FORMATS,
+    image: toFormats(['JPG','PNG','JPEG','WEBP','SVG','TIFF','GIF','BMP','PSD','HDR','ICO','AVIF']),
     doc: toFormats(['PDF','DOC','DOCX','XPS','DOCM','DOTX','ABW','AW','ODT','RTF','DOT','DOTM','DJVU','DBK','KWD','SXW','OXPS']),
-    ebook: [
-      {code:'EPUB', enabled:true}, {code:'FB2', enabled:true}, {code:'TXT', enabled:true},
-      {code:'PDB', enabled:true}, {code:'MOBI', enabled:false}, {code:'AZW3', enabled:false},
-      {code:'LRF', enabled:false}, {code:'RB', enabled:false}, {code:'SNB', enabled:false},
-      {code:'TCR', enabled:false},
-    ],
+    ebook: EBOOK_FORMATS,
     font: toFormats(['PS']),
     vector: toFormats(['SVG','EPS','AI','PLT','SK','FIG','PS','EMF','WMF','CGM','SK1']),
     cad: toFormats(['DXF']),
   };
   const CAT_LABELS = { image:'Изображение', doc:'Документ', ebook:'Электронная книга', font:'Шрифт', vector:'Вектор', cad:'CAD' };
-  let currentCategory = 'image';
+  let currentCategory = 'ebook';
 
   function showToast(msg){
     let t = document.getElementById('cwToast');
@@ -714,10 +694,11 @@
   }
   renderFmtGrid('');
 
-  // Если пришли с главной с уже выбранным форматом (?to=jpg/png) — применяем сразу.
+  // Если пришли с главной с уже выбранным форматом (?to=epub/fb2/txt/pdb) — применяем сразу.
   (function applyIncomingFormat(){
     const to = new URLSearchParams(location.search).get('to');
-    if(to && (to.toLowerCase() === 'jpg' || to.toLowerCase() === 'png')){
+    const known = EBOOK_FORMATS.filter(f=>f.enabled).map(f=>f.code.toLowerCase());
+    if(to && known.includes(to.toLowerCase())){
       selectTargetFormat(to.toUpperCase());
       history.replaceState({}, '', location.pathname);
     }
@@ -725,33 +706,28 @@
 
   document.getElementById('fmtSearch').addEventListener('input', e=> renderFmtGrid(e.target.value));
 
-  // Переключение раздела — сетка форматов справа перерисовывается под выбранный
-  // раздел; эта страница конвертирует только HEIC/HEIF-изображения, поэтому
-  // при выборе раздела «Электронная книга» сразу отправляем на /ru/ebook/ —
-  // там уже настоящий движок конвертации книг.
+  // Переключение раздела — реально доступен пока только "Электронная книга",
+  // для изображений есть отдельная страница /ru/heic/, остальные — roadmap.
   document.querySelectorAll('.fmt-cat').forEach(cat=>{
     cat.addEventListener('click', e=>{
       e.stopPropagation();
       const key = cat.dataset.cat;
-      if(key === 'ebook'){
-        closeAllDropdowns();
-        showToast('Переходим в конвертер книг…');
-        setTimeout(()=>{ window.location.href = '/ru/ebook/'; }, 700);
-        return;
-      }
       if(key === currentCategory) return;
       currentCategory = key;
       document.querySelectorAll('.fmt-cat').forEach(c=>c.classList.remove('active'));
       cat.classList.add('active');
       document.getElementById('fmtSearch').value = '';
       renderFmtGrid('');
-      if(key !== 'image'){
+      if(key === 'image'){
+        showToast('Для изображений — конвертер на странице /ru/heic/');
+      } else if(key !== 'ebook'){
         showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
       }
     });
   });
 
-  // Источник — HEIC/HEIF, оба уже поддерживаются, чип просто обновляет подпись.
+
+  // Источник — просто подпись; реальный парсер выбирается по расширению файла.
   document.querySelectorAll('#sourceDropdown .fmt-chip').forEach(chip=>{
     chip.addEventListener('click', e=>{
       e.stopPropagation();
@@ -814,484 +790,361 @@
   });
   fileInput.addEventListener('change', e=>{ handleFiles(e.target.files); });
 
-  // ===== Конвертация: HEIC -> canvas -> нужный формат =====
-  // heic2any умеет декодировать HEIC только в JPEG/PNG. Поэтому сначала всегда
-  // получаем PNG (без потерь), рисуем на canvas, а из canvas уже кодируем
-  // в конечный формат — так один и тот же пайплайн покрывает сразу все
-  // остальные форматы без лишних зависимостей.
-  // Все энкодеры ниже (BMP/TGA/PPM/PGM/PBM/WBMP/SGI/HDR/PSD/TIFF/GIF/ICO/CUR)
-  // побайтово провалидированы через Pillow/ImageMagick перед вставкой сюда.
-  const EXT_MAP = {
-    JPG:'jpg', PNG:'png', WEBP:'webp', BMP:'bmp', ICO:'ico', JFIF:'jfif', JPE:'jpe',
-    JPEG:'jpeg', JIF:'jif', JPS:'jps', TGA:'tga', PPM:'ppm', PGM:'pgm', PBM:'pbm',
-    WBMP:'wbmp', RGB:'rgb', SGI:'sgi', CUR:'cur', HDR:'hdr', GIF:'gif', PSD:'psd', TIFF:'tiff'
-  };
+  // ===== Конвертация электронных книг =====
+  // Общий пайплайн: файл-источник разбирается в простую модель книги
+  // { title, author, chapters:[{ title, paragraphs:[...] }] }, а затем эта
+  // модель кодируется в выбранный целевой формат. Форматирование внутри
+  // абзаца (жирный/курсив) не сохраняется между форматами — переносятся
+  // заголовок, автор, разбивка на главы и текст абзацев.
 
-  function loadImage(blob){
-    return new Promise((resolve, reject)=>{
-      const img = new Image();
-      img.onload = ()=> resolve(img);
-      img.onerror = ()=> reject(new Error('Не удалось декодировать изображение'));
-      img.src = URL.createObjectURL(blob);
+  function stripTags(html){
+    const div = document.createElement('div');
+    div.innerHTML = html;
+    return (div.textContent || '').replace(/\s+\n/g, '\n').trim();
+  }
+
+  function escapeXml(s){
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+  }
+
+  function baseName(filename){
+    return (filename || 'book').replace(/\.[^.]+$/, '');
+  }
+
+  // ---------- Источник: TXT ----------
+  function parseTXT(text, filename){
+    const lines = text.replace(/\r\n?/g, '\n').split('\n');
+    const chapters = [];
+    let current = { title: null, paragraphs: [] };
+    let buffer = [];
+    const chapterRe = /^(глава|часть|chapter|part)\s+\S+/i;
+    function flush(){
+      if(buffer.length){ current.paragraphs.push(buffer.join(' ').trim()); buffer = []; }
+    }
+    lines.forEach(line=>{
+      const t = line.trim();
+      if(!t){ flush(); return; }
+      if(t.length < 80 && chapterRe.test(t)){
+        flush();
+        if(current.paragraphs.length || current.title) chapters.push(current);
+        current = { title: t, paragraphs: [] };
+        return;
+      }
+      buffer.push(t);
     });
+    flush();
+    if(current.paragraphs.length || current.title) chapters.push(current);
+    if(!chapters.length) chapters.push({ title: null, paragraphs: [''] });
+    return { title: baseName(filename), author: '', chapters };
   }
 
-  async function heicToCanvas(file){
-    const result = await heic2any({ blob: file, toType: 'image/png', quality: 0.92 });
-    const pngBlob = Array.isArray(result) ? result[0] : result;
-    const img = await loadImage(pngBlob);
-    const canvas = document.createElement('canvas');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    const ctx = canvas.getContext('2d');
-    // Белая подложка — чтобы форматы без альфа-канала не давали чёрные края
-    // на месте прозрачности.
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.drawImage(img, 0, 0);
-    return canvas;
-  }
-
-  function canvasToBlob(canvas, mime, quality){
-    return new Promise(resolve=> canvas.toBlob(resolve, mime, quality));
-  }
-
-  function getRGBAData(canvas){
-    return canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
-  }
-
-  // ---------- BMP (24-битный, без сжатия, BITMAPINFOHEADER) ----------
-  function encodeBMP(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const rowSize = Math.floor((24 * w + 31) / 32) * 4;
-    const pixelArraySize = rowSize * h;
-    const fileSize = 54 + pixelArraySize;
-    const buf = new ArrayBuffer(fileSize);
-    const view = new DataView(buf);
-
-    view.setUint8(0, 0x42); view.setUint8(1, 0x4D);
-    view.setUint32(2, fileSize, true);
-    view.setUint32(6, 0, true);
-    view.setUint32(10, 54, true);
-    view.setUint32(14, 40, true);
-    view.setInt32(18, w, true);
-    view.setInt32(22, h, true);
-    view.setUint16(26, 1, true);
-    view.setUint16(28, 24, true);
-    view.setUint32(30, 0, true);
-    view.setUint32(34, pixelArraySize, true);
-    view.setInt32(38, 2835, true);
-    view.setInt32(42, 2835, true);
-    view.setUint32(46, 0, true);
-    view.setUint32(50, 0, true);
-
-    let offset = 54;
-    for(let y = h - 1; y >= 0; y--){
-      for(let x = 0; x < w; x++){
-        const i = (y * w + x) * 4;
-        view.setUint8(offset++, data[i + 2]);
-        view.setUint8(offset++, data[i + 1]);
-        view.setUint8(offset++, data[i]);
+  // ---------- Источник: Markdown ----------
+  function parseMD(text, filename){
+    const lines = text.replace(/\r\n?/g, '\n').split('\n');
+    const chapters = [];
+    let current = { title: null, paragraphs: [] };
+    let buffer = [];
+    function clean(s){
+      return s.replace(/\*\*(.*?)\*\*/g, '$1').replace(/__(.*?)__/g, '$1')
+              .replace(/\*(.*?)\*/g, '$1').replace(/_(.*?)_/g, '$1')
+              .replace(/`([^`]*)`/g, '$1').replace(/^[-*+]\s+/, '').trim();
+    }
+    function flush(){
+      if(buffer.length){ current.paragraphs.push(clean(buffer.join(' '))); buffer = []; }
+    }
+    lines.forEach(line=>{
+      const t = line.trim();
+      if(!t){ flush(); return; }
+      const heading = /^#{1,6}\s+(.*)$/.exec(t);
+      if(heading){
+        flush();
+        if(current.paragraphs.length || current.title) chapters.push(current);
+        current = { title: clean(heading[1]), paragraphs: [] };
+        return;
       }
-      for(let p = 0; p < rowSize - w * 3; p++) view.setUint8(offset++, 0);
-    }
-    return new Blob([buf], { type: 'image/bmp' });
+      buffer.push(t);
+    });
+    flush();
+    if(current.paragraphs.length || current.title) chapters.push(current);
+    if(!chapters.length) chapters.push({ title: null, paragraphs: [''] });
+    return { title: baseName(filename), author: '', chapters };
   }
 
-  // ---------- TGA (Truevision, несжатый true-color) ----------
-  function encodeTGA(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const header = new Uint8Array(18);
-    header[2] = 2;
-    new DataView(header.buffer).setUint16(12, w, true);
-    new DataView(header.buffer).setUint16(14, h, true);
-    header[16] = 24;
-    header[17] = 0x20; // top-left origin
-    const pixels = new Uint8Array(w * h * 3);
-    let p = 0;
-    for(let i = 0; i < data.length; i += 4){
-      pixels[p++] = data[i+2]; pixels[p++] = data[i+1]; pixels[p++] = data[i];
-    }
-    return new Blob([header, pixels], { type: 'image/x-tga' });
-  }
-
-  // ---------- PPM / PGM / PBM (Netpbm) ----------
-  function encodePPM(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const header = new TextEncoder().encode(`P6\n${w} ${h}\n255\n`);
-    const pixels = new Uint8Array(w * h * 3);
-    let p = 0;
-    for(let i = 0; i < data.length; i += 4){
-      pixels[p++] = data[i]; pixels[p++] = data[i+1]; pixels[p++] = data[i+2];
-    }
-    return new Blob([header, pixels], { type: 'image/x-portable-pixmap' });
-  }
-  function encodePGM(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const header = new TextEncoder().encode(`P5\n${w} ${h}\n255\n`);
-    const pixels = new Uint8Array(w * h);
-    for(let i = 0, p = 0; i < data.length; i += 4, p++){
-      pixels[p] = Math.round(0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2]);
-    }
-    return new Blob([header, pixels], { type: 'image/x-portable-graymap' });
-  }
-  function encodePBM(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const header = new TextEncoder().encode(`P4\n${w} ${h}\n`);
-    const rowBytes = Math.ceil(w / 8);
-    const pixels = new Uint8Array(rowBytes * h);
-    for(let y = 0; y < h; y++){
-      for(let x = 0; x < w; x++){
-        const i = (y*w+x)*4;
-        const lum = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
-        if(lum < 128) pixels[y*rowBytes + (x>>3)] |= (0x80 >> (x&7));
+  // ---------- Источник: HTML ----------
+  function parseHTML(text, filename){
+    const doc = new DOMParser().parseFromString(text, 'text/html');
+    const titleTag = doc.querySelector('title');
+    const title = (titleTag && titleTag.textContent.trim()) || baseName(filename);
+    const chapters = [];
+    let current = { title: null, paragraphs: [] };
+    const walker = doc.createTreeWalker(doc.body || doc.documentElement, NodeFilter.SHOW_ELEMENT);
+    let node = walker.currentNode;
+    const blockTags = new Set(['P','DIV','LI','BLOCKQUOTE','TD']);
+    while(node){
+      const tag = node.tagName;
+      if(tag === 'H1' || tag === 'H2'){
+        if(current.paragraphs.length || current.title) chapters.push(current);
+        current = { title: node.textContent.trim(), paragraphs: [] };
+      } else if(blockTags.has(tag)){
+        const t = node.textContent.trim();
+        if(t) current.paragraphs.push(t);
       }
+      node = walker.nextNode();
     }
-    return new Blob([header, pixels], { type: 'image/x-portable-bitmap' });
+    if(current.paragraphs.length || current.title) chapters.push(current);
+    if(!chapters.length) chapters.push({ title: null, paragraphs: [stripTags(text)] });
+    return { title, author: '', chapters };
   }
 
-  // ---------- WBMP (Wireless Bitmap, 1-бит) ----------
-  function encodeMBI(value){
-    let bytes = [value & 0x7F];
-    let v = value >> 7;
-    while(v > 0){ bytes.unshift((v & 0x7F) | 0x80); v >>= 7; }
-    return bytes;
-  }
-  function encodeWBMP(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const rowBytes = Math.ceil(w / 8);
-    const pixels = new Uint8Array(rowBytes * h);
-    for(let y = 0; y < h; y++){
-      for(let x = 0; x < w; x++){
-        const i = (y*w+x)*4;
-        const lum = 0.299*data[i] + 0.587*data[i+1] + 0.114*data[i+2];
-        if(lum >= 128) pixels[y*rowBytes + (x>>3)] |= (0x80 >> (x&7)); // 1 = белый
-      }
+  // ---------- Источник: FB2 ----------
+  function parseFB2(text, filename){
+    const doc = new DOMParser().parseFromString(text, 'application/xml');
+    if(doc.querySelector('parsererror')) throw new Error('Файл повреждён или это не FB2');
+    const get = (tag) => doc.getElementsByTagName(tag)[0];
+    const title = (get('book-title') && get('book-title').textContent.trim()) || baseName(filename);
+    const first = get('first-name');
+    const last = get('last-name');
+    const author = [first && first.textContent, last && last.textContent].filter(Boolean).join(' ').trim();
+    const bodyEl = get('body');
+    const chapters = [];
+    if(bodyEl){
+      const topSections = Array.from(bodyEl.children).filter(el => el.tagName.toLowerCase() === 'section');
+      const sectionsToUse = topSections.length ? topSections : [bodyEl];
+      sectionsToUse.forEach(section=>{
+        const titleEl = section.querySelector(':scope > title');
+        const chTitle = titleEl ? titleEl.textContent.trim().replace(/\s+/g, ' ') : null;
+        const paragraphs = Array.from(section.getElementsByTagName('p'))
+          .filter(p => !p.closest('title'))
+          .map(p => p.textContent.trim())
+          .filter(Boolean);
+        chapters.push({ title: chTitle, paragraphs });
+      });
     }
-    const header = new Uint8Array([0x00, 0x00, ...encodeMBI(w), ...encodeMBI(h)]);
-    return new Blob([header, pixels], { type: 'image/vnd.wap.wbmp' });
+    if(!chapters.length) chapters.push({ title: null, paragraphs: [] });
+    return { title, author, chapters };
   }
 
-  // ---------- SGI / RGB (Silicon Graphics, несжатый) ----------
-  function encodeSGI(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const headerSize = 512, channels = 3;
-    const buf = new ArrayBuffer(headerSize + w*h*channels);
-    const view = new DataView(buf);
-    view.setUint16(0, 0x01DA, false);
-    view.setUint8(2, 0); view.setUint8(3, 1);
-    view.setUint16(4, 3, false);
-    view.setUint16(6, w, false); view.setUint16(8, h, false);
-    view.setUint16(10, channels, false);
-    view.setUint32(12, 0, false); view.setUint32(16, 255, false);
-    const out = new Uint8Array(buf);
-    let offset = headerSize;
-    for(let z = 0; z < channels; z++){
-      for(let y = h-1; y >= 0; y--){
-        for(let x = 0; x < w; x++){
-          out[offset++] = data[(y*w+x)*4 + z];
-        }
-      }
+  // ---------- Источник: EPUB ----------
+  async function parseEPUB(arrayBuffer, filename){
+    if(typeof JSZip === 'undefined') throw new Error('Не удалось загрузить библиотеку для чтения EPUB');
+    const zip = await JSZip.loadAsync(arrayBuffer);
+    const containerFile = zip.file('META-INF/container.xml');
+    if(!containerFile) throw new Error('Это не похоже на корректный EPUB-файл');
+    const containerXml = await containerFile.async('string');
+    const containerDoc = new DOMParser().parseFromString(containerXml, 'application/xml');
+    const rootfile = containerDoc.getElementsByTagName('rootfile')[0];
+    const opfPath = rootfile && rootfile.getAttribute('full-path');
+    if(!opfPath) throw new Error('Не удалось найти content.opf внутри EPUB');
+    const opfDir = opfPath.includes('/') ? opfPath.slice(0, opfPath.lastIndexOf('/') + 1) : '';
+    const opfFile = zip.file(opfPath);
+    if(!opfFile) throw new Error('content.opf отсутствует в архиве EPUB');
+    const opfXml = await opfFile.async('string');
+    const opfDoc = new DOMParser().parseFromString(opfXml, 'application/xml');
+    const titleEl = opfDoc.getElementsByTagName('dc:title')[0] || opfDoc.getElementsByTagName('title')[0];
+    const creatorEl = opfDoc.getElementsByTagName('dc:creator')[0] || opfDoc.getElementsByTagName('creator')[0];
+    const title = (titleEl && titleEl.textContent.trim()) || baseName(filename);
+    const author = (creatorEl && creatorEl.textContent.trim()) || '';
+
+    const manifest = {};
+    Array.from(opfDoc.getElementsByTagName('item')).forEach(item=>{
+      manifest[item.getAttribute('id')] = item.getAttribute('href');
+    });
+    const spineIds = Array.from(opfDoc.getElementsByTagName('itemref')).map(ir => ir.getAttribute('idref'));
+
+    const chapters = [];
+    for(const idref of spineIds){
+      const href = manifest[idref];
+      if(!href) continue;
+      const path = (opfDir + href).replace(/^\.\//, '');
+      const file = zip.file(path) || zip.file(decodeURIComponent(path));
+      if(!file) continue;
+      const xhtml = await file.async('string');
+      let doc;
+      try{ doc = new DOMParser().parseFromString(xhtml, 'application/xhtml+xml'); }
+      catch(e){ doc = null; }
+      if(!doc || doc.querySelector('parsererror')) doc = new DOMParser().parseFromString(xhtml, 'text/html');
+      const heading = doc.querySelector('h1, h2');
+      const chTitle = heading ? heading.textContent.trim() : null;
+      const paragraphs = Array.from(doc.querySelectorAll('p'))
+        .map(p => p.textContent.trim())
+        .filter(Boolean);
+      chapters.push({ title: chTitle, paragraphs });
     }
-    return new Blob([out], { type: 'image/x-sgi' });
+    if(!chapters.length) chapters.push({ title: null, paragraphs: [] });
+    return { title, author, chapters };
   }
 
-  // ---------- HDR (Radiance RGBE) ----------
-  function encodeHDR(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const header = new TextEncoder().encode(`#?RADIANCE\nFORMAT=32-bit_rle_rgbe\n\n-Y ${h} +X ${w}\n`);
-    const body = new Uint8Array(w*h*4);
-    let p = 0;
-    for(let i = 0; i < data.length; i += 4){
-      const r = data[i]/255, g = data[i+1]/255, b = data[i+2]/255;
-      const max = Math.max(r,g,b);
-      if(max < 1e-8){
-        body[p++]=0; body[p++]=0; body[p++]=0; body[p++]=0;
-      } else {
-        const e = Math.ceil(Math.log2(max));
-        const scale = Math.pow(2, -e+8);
-        body[p++] = Math.min(255, Math.floor(r*scale));
-        body[p++] = Math.min(255, Math.floor(g*scale));
-        body[p++] = Math.min(255, Math.floor(b*scale));
-        body[p++] = e+128;
-      }
-    }
-    return new Blob([header, body], { type: 'image/vnd.radiance' });
+  async function parseBook(file){
+    const ext = (file.name.split('.').pop() || '').toLowerCase();
+    if(ext === 'txt') return parseTXT(await file.text(), file.name);
+    if(ext === 'md' || ext === 'markdown') return parseMD(await file.text(), file.name);
+    if(ext === 'html' || ext === 'htm') return parseHTML(await file.text(), file.name);
+    if(ext === 'fb2') return parseFB2(await file.text(), file.name);
+    if(ext === 'epub') return parseEPUB(await file.arrayBuffer(), file.name);
+    throw new Error(`Формат .${ext} пока не поддерживается как источник`);
   }
 
-  // ---------- PSD (плоский, один слой, без сжатия) ----------
-  function encodePSD(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const header = new Uint8Array(26);
-    const hv = new DataView(header.buffer);
-    header.set(new TextEncoder().encode('8BPS'), 0);
-    hv.setUint16(4, 1, false);
-    hv.setUint16(12, 3, false);
-    hv.setUint32(14, h, false);
-    hv.setUint32(18, w, false);
-    hv.setUint16(22, 8, false);
-    hv.setUint16(24, 3, false);
-
-    const emptySection = new Uint8Array(4); // length=0 (colorMode/imageResources/layerMask)
-    const compressionField = new Uint8Array(2); // 0 = raw
-
-    const planeSize = w*h;
-    const imageData = new Uint8Array(planeSize*3);
-    let p = 0;
-    for(let z = 0; z < 3; z++){
-      for(let i = 0; i < data.length; i += 4){
-        imageData[p++] = data[i+z];
-      }
-    }
-    return new Blob([header, emptySection, emptySection, emptySection, compressionField, imageData], { type: 'image/vnd.adobe.photoshop' });
-  }
-
-  // ---------- TIFF (несжатый, chunky RGB) ----------
-  function encodeTIFF(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const imageDataOffset = 8;
-    const imageDataSize = w*h*3;
-    const ifdOffset = imageDataOffset + imageDataSize;
-    const numEntries = 10;
-    const ifdSize = 2 + numEntries*12 + 4;
-    const bpsOffset = ifdOffset + ifdSize;
-    const total = bpsOffset + 6;
-
-    const buf = new ArrayBuffer(total);
-    const view = new DataView(buf);
-    const out = new Uint8Array(buf);
-    out.set(new TextEncoder().encode('II'), 0);
-    view.setUint16(2, 42, true);
-    view.setUint32(4, ifdOffset, true);
-
-    let p = imageDataOffset;
-    for(let i = 0; i < data.length; i += 4){
-      out[p++] = data[i]; out[p++] = data[i+1]; out[p++] = data[i+2];
-    }
-
-    function writeEntry(offset, tag, type, count, value){
-      view.setUint16(offset, tag, true);
-      view.setUint16(offset+2, type, true);
-      view.setUint32(offset+4, count, true);
-      view.setUint32(offset+8, value, true);
-    }
-
-    let o = ifdOffset;
-    view.setUint16(o, numEntries, true); o += 2;
-    writeEntry(o, 256, 3, 1, w); o+=12;
-    writeEntry(o, 257, 3, 1, h); o+=12;
-    writeEntry(o, 258, 3, 3, bpsOffset); o+=12;
-    writeEntry(o, 259, 3, 1, 1); o+=12;
-    writeEntry(o, 262, 3, 1, 2); o+=12;
-    writeEntry(o, 273, 4, 1, imageDataOffset); o+=12;
-    writeEntry(o, 277, 3, 1, 3); o+=12;
-    writeEntry(o, 278, 3, 1, h); o+=12;
-    writeEntry(o, 279, 4, 1, imageDataSize); o+=12;
-    writeEntry(o, 284, 3, 1, 1); o+=12;
-    view.setUint32(o, 0, true); o+=4;
-
-    view.setUint16(bpsOffset, 8, true);
-    view.setUint16(bpsOffset+2, 8, true);
-    view.setUint16(bpsOffset+4, 8, true);
-
-    return new Blob([buf], { type: 'image/tiff' });
-  }
-
-  // ---------- GIF (статичный, 252-цветная фиксированная палитра + LZW) ----------
-  // Индекс палитры считается напрямую по квантованным R/G/B — без построения
-  // гистограммы и поиска ближайшего цвета, поэтому кодирование быстрое даже
-  // для больших фото. Тайминг увеличения битности кода подобран и
-  // провалидирован против настоящих GIF-декодеров (Pillow/ImageMagick).
-  const GIF_RLEV=6, GIF_GLEV=7, GIF_BLEV=6;
-  function buildGifPalette(){
-    const pal = new Uint8Array(256*3);
-    let i = 0;
-    for(let r=0;r<GIF_RLEV;r++)
-      for(let g=0;g<GIF_GLEV;g++)
-        for(let b=0;b<GIF_BLEV;b++){
-          pal[i*3]   = Math.round(r*255/(GIF_RLEV-1));
-          pal[i*3+1] = Math.round(g*255/(GIF_GLEV-1));
-          pal[i*3+2] = Math.round(b*255/(GIF_BLEV-1));
-          i++;
-        }
-    return pal;
-  }
-  function gifQuantizeIndex(r,g,b){
-    const rq = Math.round(r/255*(GIF_RLEV-1));
-    const gq = Math.round(g/255*(GIF_GLEV-1));
-    const bq = Math.round(b/255*(GIF_BLEV-1));
-    return rq*GIF_GLEV*GIF_BLEV + gq*GIF_BLEV + bq;
-  }
-  function gifLzwEncode(indices, minCodeSize){
-    const clearCode = 1 << minCodeSize;
-    const eoiCode = clearCode + 1;
-    let curCodeSize = minCodeSize + 1;
-    let nextCode = eoiCode + 1;
-    const MAX_CODE = 4096;
-    let dict = new Map();
+  // ---------- Цель: TXT ----------
+  function encodeTXT(book){
     const out = [];
-    let curBits = 0, curBitCount = 0;
-    function emit(code){
-      curBits |= code << curBitCount;
-      curBitCount += curCodeSize;
-      while(curBitCount >= 8){ out.push(curBits & 0xFF); curBits >>>= 8; curBitCount -= 8; }
-    }
-    function resetDict(){ dict = new Map(); nextCode = eoiCode+1; curCodeSize = minCodeSize+1; }
-    emit(clearCode);
-    let prev = indices[0];
-    for(let i = 1; i < indices.length; i++){
-      const k = indices[i];
-      const key = prev*256 + k;
-      if(dict.has(key)){
-        prev = dict.get(key);
-      } else {
-        emit(prev);
-        // Увеличение битности кода "отстаёт" на один код от роста словаря —
-        // именно так работают настоящие GIF-декодеры (см. комментарий выше).
-        if(nextCode === (1<<curCodeSize) && curCodeSize < 12) curCodeSize++;
-        dict.set(key, nextCode); nextCode++;
-        if(nextCode >= MAX_CODE){ emit(clearCode); resetDict(); }
-        prev = k;
-      }
-    }
-    emit(prev);
-    emit(eoiCode);
-    if(curBitCount > 0) out.push(curBits & 0xFF);
-    return out;
-  }
-  function encodeGIF(canvas){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const pal = buildGifPalette();
-    const indices = new Uint8Array(w*h);
-    for(let i = 0, p = 0; i < data.length; i += 4, p++){
-      indices[p] = gifQuantizeIndex(data[i], data[i+1], data[i+2]);
-    }
-    const parts = [];
-    parts.push(new TextEncoder().encode('GIF89a'));
-    const lsd = new Uint8Array(7);
-    new DataView(lsd.buffer).setUint16(0, w, true);
-    new DataView(lsd.buffer).setUint16(2, h, true);
-    lsd[4] = 0xF0 | 0x07;
-    parts.push(lsd);
-    parts.push(pal);
-    const id = new Uint8Array(10);
-    id[0] = 0x2C;
-    new DataView(id.buffer).setUint16(5, w, true);
-    new DataView(id.buffer).setUint16(7, h, true);
-    parts.push(id);
-    const minCodeSize = 8;
-    parts.push(new Uint8Array([minCodeSize]));
-    const lzwBytes = gifLzwEncode(Array.from(indices), minCodeSize);
-    let i = 0;
-    while(i < lzwBytes.length){
-      const len = Math.min(255, lzwBytes.length - i);
-      parts.push(new Uint8Array([len]));
-      parts.push(new Uint8Array(lzwBytes.slice(i, i+len)));
-      i += len;
-    }
-    parts.push(new Uint8Array([0]));
-    parts.push(new Uint8Array([0x3B]));
-    return new Blob(parts, { type: 'image/gif' });
+    out.push(book.title);
+    if(book.author) out.push(book.author);
+    out.push('');
+    book.chapters.forEach((ch, i)=>{
+      out.push(ch.title || `Глава ${i + 1}`);
+      out.push('');
+      ch.paragraphs.forEach(p=>{ out.push(p); out.push(''); });
+    });
+    return new Blob([out.join('\n')], { type: 'text/plain;charset=utf-8' });
   }
 
-  // ---------- ICO / CUR (32-битный DIB с альфа-каналом — самый совместимый вариант) ----------
-  function encodeIcoOrCur(canvas, isCursor){
-    const w = canvas.width, h = canvas.height;
-    const data = getRGBAData(canvas);
-    const dibHeaderSize = 40;
-    const xorSize = w*h*4;
-    const andRowBytes = Math.ceil(w/32)*4;
-    const andSize = andRowBytes*h;
-    const imageSize = dibHeaderSize + xorSize + andSize;
-    const headerSize = 6, dirEntrySize = 16;
-    const buf = new ArrayBuffer(headerSize + dirEntrySize + imageSize);
+  // ---------- Цель: FB2 ----------
+  function encodeFB2(book){
+    const [firstName, ...rest] = (book.author || '').split(' ');
+    const lastName = rest.join(' ');
+    const authorXml = book.author
+      ? `<author>${firstName ? `<first-name>${escapeXml(firstName)}</first-name>` : ''}${lastName ? `<last-name>${escapeXml(lastName)}</last-name>` : ''}</author>`
+      : '';
+    const body = book.chapters.map((ch, i)=>{
+      const t = ch.title || `Глава ${i + 1}`;
+      const paras = ch.paragraphs.map(p => `<p>${escapeXml(p)}</p>`).join('');
+      return `<section><title><p>${escapeXml(t)}</p></title>${paras}</section>`;
+    }).join('');
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">\n<description><title-info>${authorXml}<book-title>${escapeXml(book.title)}</book-title><lang>ru</lang></title-info></description>\n<body>${body}</body>\n</FictionBook>`;
+    return new Blob([xml], { type: 'application/x-fictionbook+xml' });
+  }
+
+  // ---------- Цель: EPUB ----------
+  async function encodeEPUB(book){
+    if(typeof JSZip === 'undefined') throw new Error('Не удалось загрузить библиотеку для сборки EPUB');
+    const zip = new JSZip();
+    zip.file('mimetype', 'application/epub+zip', { compression: 'STORE' });
+    zip.folder('META-INF').file('container.xml',
+      `<?xml version="1.0" encoding="UTF-8"?>\n<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container">\n<rootfiles><rootfile full-path="OEBPS/content.opf" media-type="application/oebps-package+xml"/></rootfiles>\n</container>`);
+    const oebps = zip.folder('OEBPS');
+    oebps.file('style.css', 'body{font-family:serif;line-height:1.5;margin:1.2em;} h1{font-size:1.3em;}');
+
+    const uid = 'urn:uuid:' + 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c=>{
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+
+    const manifestItems = [`<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>`,
+      `<item id="css" href="style.css" media-type="text/css"/>`];
+    const spineItems = [];
+    const navPoints = [];
+
+    book.chapters.forEach((ch, i)=>{
+      const idx = String(i + 1).padStart(3, '0');
+      const chTitle = ch.title || `Глава ${i + 1}`;
+      const paras = ch.paragraphs.map(p => `<p>${escapeXml(p)}</p>`).join('\n');
+      const xhtml = `<?xml version="1.0" encoding="UTF-8"?>\n<html xmlns="http://www.w3.org/1999/xhtml"><head><title>${escapeXml(chTitle)}</title><link rel="stylesheet" href="style.css"/></head><body><h1>${escapeXml(chTitle)}</h1>${paras}</body></html>`;
+      oebps.file(`chapter${idx}.xhtml`, xhtml);
+      manifestItems.push(`<item id="ch${idx}" href="chapter${idx}.xhtml" media-type="application/xhtml+xml"/>`);
+      spineItems.push(`<itemref idref="ch${idx}"/>`);
+      navPoints.push(`<li><a href="chapter${idx}.xhtml">${escapeXml(chTitle)}</a></li>`);
+    });
+
+    const opf = `<?xml version="1.0" encoding="UTF-8"?>\n<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid">\n<metadata xmlns:dc="http://purl.org/dc/elements/1.1/">\n<dc:identifier id="bookid">${uid}</dc:identifier>\n<dc:title>${escapeXml(book.title)}</dc:title>\n<dc:language>ru</dc:language>\n${book.author ? `<dc:creator>${escapeXml(book.author)}</dc:creator>` : ''}\n<meta property="dcterms:modified">${new Date().toISOString().replace(/\.\d+Z$/, 'Z')}</meta>\n</metadata>\n<manifest>${manifestItems.join('')}</manifest>\n<spine>${spineItems.join('')}</spine>\n</package>`;
+    oebps.file('content.opf', opf);
+    oebps.file('nav.xhtml', `<?xml version="1.0" encoding="UTF-8"?>\n<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops"><head><title>${escapeXml(book.title)}</title></head><body><nav epub:type="toc"><h1>${escapeXml(book.title)}</h1><ol>${navPoints.join('')}</ol></nav></body></html>`);
+
+    return zip.generateAsync({ type: 'blob', mimeType: 'application/epub+zip' });
+  }
+
+  // ---------- Цель: PDB (PalmDoc / TEXtREAd, без сжатия) ----------
+  function encodePDB(book){
+    const lines = [];
+    book.chapters.forEach((ch, i)=>{
+      lines.push(ch.title || `Глава ${i + 1}`);
+      lines.push('');
+      ch.paragraphs.forEach(p=>{ lines.push(p); lines.push(''); });
+    });
+    const text = (book.title + '\n\n' + lines.join('\n')).trim() + '\n';
+    const textBytes = new TextEncoder().encode(text);
+
+    const RECORD_SIZE = 4096;
+    const numTextRecords = Math.max(1, Math.ceil(textBytes.length / RECORD_SIZE));
+    const totalRecords = 1 + numTextRecords; // record0 (palmdoc header) + text records
+
+    const HEADER_SIZE = 78;
+    const recordListSize = 6 + totalRecords * 8;
+    const PADDING = 2;
+    const dataStart = HEADER_SIZE + recordListSize + PADDING;
+
+    const record0Size = 16;
+    const recordOffsets = [dataStart];
+    let cursor = dataStart + record0Size;
+    for(let i = 0; i < numTextRecords; i++){
+      recordOffsets.push(cursor);
+      const chunkLen = Math.min(RECORD_SIZE, textBytes.length - i * RECORD_SIZE);
+      cursor += chunkLen;
+    }
+    const totalSize = cursor;
+
+    const buf = new ArrayBuffer(totalSize);
     const view = new DataView(buf);
-    const out = new Uint8Array(buf);
+    const bytes = new Uint8Array(buf);
 
-    view.setUint16(0, 0, true);
-    view.setUint16(2, isCursor ? 2 : 1, true);
-    view.setUint16(4, 1, true);
-
-    let o = 6;
-    out[o++] = w >= 256 ? 0 : w;
-    out[o++] = h >= 256 ? 0 : h;
-    out[o++] = 0; out[o++] = 0;
-    if(isCursor){
-      view.setUint16(o, Math.round(w/2), true); o += 2; // hotspot по центру
-      view.setUint16(o, Math.round(h/2), true); o += 2;
-    } else {
-      view.setUint16(o, 1, true); o += 2;
-      view.setUint16(o, 32, true); o += 2;
+    function writeStr(offset, str, len){
+      const enc = new TextEncoder().encode(str).slice(0, len);
+      bytes.set(enc, offset);
     }
-    view.setUint32(o, imageSize, true); o += 4;
-    view.setUint32(o, headerSize + dirEntrySize, true); o += 4;
 
-    let p = headerSize + dirEntrySize;
-    view.setUint32(p, 40, true);
-    view.setInt32(p+4, w, true);
-    view.setInt32(p+8, h*2, true);
-    view.setUint16(p+12, 1, true);
-    view.setUint16(p+14, 32, true);
-    view.setUint32(p+16, 0, true);
-    view.setUint32(p+20, xorSize, true);
-    p += 40;
+    writeStr(0, baseName(book.title).slice(0, 31) || 'book', 32);
+    view.setUint16(32, 0, false);       // attributes
+    view.setUint16(34, 0, false);       // version
+    const palmEpoch = Math.floor(Date.now() / 1000) + 2082844800;
+    view.setUint32(36, palmEpoch, false); // creation date
+    view.setUint32(40, palmEpoch, false); // mod date
+    view.setUint32(44, 0, false);        // backup date
+    view.setUint32(48, 0, false);        // modification number
+    view.setUint32(52, 0, false);        // app info id
+    view.setUint32(56, 0, false);        // sort info id
+    writeStr(60, 'TEXt', 4);
+    writeStr(64, 'REAd', 4);
+    view.setUint32(68, 0, false);        // unique id seed
+    view.setUint32(72, 0, false);        // next record list id
+    view.setUint16(76, totalRecords, false);
 
-    for(let y = h-1; y >= 0; y--){
-      for(let x = 0; x < w; x++){
-        const i = (y*w+x)*4;
-        out[p++] = data[i+2]; out[p++] = data[i+1]; out[p++] = data[i]; out[p++] = data[i+3];
-      }
+    let p = HEADER_SIZE;
+    recordOffsets.forEach((offset, i)=>{
+      view.setUint32(p, offset, false); p += 4;
+      view.setUint8(p, 0); p += 1;       // attributes
+      // 3-byte unique id
+      view.setUint8(p, (i >> 16) & 0xff); p += 1;
+      view.setUint8(p, (i >> 8) & 0xff); p += 1;
+      view.setUint8(p, i & 0xff); p += 1;
+    });
+    view.setUint16(p, 0, false); p += 2; // padding gap
+
+    // record0: PalmDOC header, compression = 1 (none)
+    view.setUint16(dataStart, 1, false);
+    view.setUint16(dataStart + 2, 0, false);
+    view.setUint32(dataStart + 4, textBytes.length, false);
+    view.setUint16(dataStart + 8, numTextRecords, false);
+    view.setUint16(dataStart + 10, RECORD_SIZE, false);
+    view.setUint16(dataStart + 12, 0, false);
+    view.setUint16(dataStart + 14, 0, false);
+
+    for(let i = 0; i < numTextRecords; i++){
+      const start = i * RECORD_SIZE;
+      const chunk = textBytes.subarray(start, start + RECORD_SIZE);
+      bytes.set(chunk, recordOffsets[i + 1]);
     }
-    // AND-маска остаётся нулевой — прозрачность полностью определяется альфа-каналом
-    return new Blob([buf], { type: isCursor ? 'image/x-cursor' : 'image/x-icon' });
+
+    return new Blob([buf], { type: 'application/x-pilot' });
   }
 
-  async function encodeCanvasToFormat(canvas, code){
+  async function encodeBook(book, code){
     switch(code){
-      case 'PNG':
-        return canvasToBlob(canvas, 'image/png');
-      case 'JPG': case 'JFIF': case 'JPE': case 'JPEG': case 'JIF': case 'JPS':
-        return canvasToBlob(canvas, 'image/jpeg', 0.92);
-      case 'WEBP': {
-        const blob = await canvasToBlob(canvas, 'image/webp', 0.92);
-        if(!blob) throw new Error('WEBP не поддерживается в этом браузере');
-        return blob;
-      }
-      case 'BMP': return encodeBMP(canvas);
-      case 'TGA': return encodeTGA(canvas);
-      case 'PPM': return encodePPM(canvas);
-      case 'PGM': return encodePGM(canvas);
-      case 'PBM': return encodePBM(canvas);
-      case 'WBMP': return encodeWBMP(canvas);
-      case 'RGB': case 'SGI': return encodeSGI(canvas);
-      case 'HDR': return encodeHDR(canvas);
-      case 'PSD': return encodePSD(canvas);
-      case 'TIFF': return encodeTIFF(canvas);
-      case 'GIF': return encodeGIF(canvas);
-      case 'ICO': return encodeIcoOrCur(canvas, false);
-      case 'CUR': return encodeIcoOrCur(canvas, true);
-      default:
-        throw new Error('Этот формат пока не поддерживается');
+      case 'TXT': return { blob: encodeTXT(book), ext: 'txt' };
+      case 'FB2': return { blob: encodeFB2(book), ext: 'fb2' };
+      case 'EPUB': return { blob: await encodeEPUB(book), ext: 'epub' };
+      case 'PDB': return { blob: encodePDB(book), ext: 'pdb' };
+      default: throw new Error('Этот формат пока не поддерживается');
     }
   }
-
-  // Форматы, которые браузер умеет показать напрямую в <img>. Для остальных
-  // (TGA/PPM/PGM/PBM/WBMP/SGI/HDR/PSD/TIFF/CUR) файл на диске полностью
-  // корректен, но для превью в интерфейсе рисуем PNG-снимок того же canvas —
-  // иначе браузер покажет "битую картинку", хотя сам файл рабочий.
-  const BROWSER_PREVIEWABLE = new Set(['PNG','JPG','JFIF','JPE','JPEG','JIF','JPS','WEBP','BMP','GIF','ICO']);
-
 
   function handleFiles(fileList){
     if(!targetFormat){
@@ -1311,22 +1164,21 @@
       }
 
       const frame = document.createElement('div');
-      frame.className='frame';
-      const idx = String(sheet.children.length+1).padStart(3,'0');
+      frame.className = 'frame';
+      const idx = String(sheet.children.length + 1).padStart(3, '0');
       frame.innerHTML = `<div class="status working">Файл ${idx} — обработка…</div>`;
       sheet.appendChild(frame);
 
-      heicToCanvas(file)
-        .then(async canvas=>{
-          const blob = await encodeCanvasToFormat(canvas, targetFormat);
+      parseBook(file)
+        .then(async book=>{
+          const { blob, ext } = await encodeBook(book, targetFormat);
           const url = URL.createObjectURL(blob);
-          const ext = EXT_MAP[targetFormat] || targetFormat.toLowerCase();
-          const outName = file.name.replace(/\.(heic|heif)$/i, '') + '.' + ext;
-          const previewUrl = BROWSER_PREVIEWABLE.has(targetFormat)
-            ? url
-            : URL.createObjectURL(await canvasToBlob(canvas, 'image/png'));
+          const outName = baseName(file.name) + '.' + ext;
+          const chapterWord = book.chapters.length === 1 ? 'глава' : 'главы';
           frame.innerHTML = `
-            <img src="${previewUrl}" alt="${outName}">
+            <div style="font-size:28px; margin-bottom:8px;">📘</div>
+            <div style="font-weight:600; margin-bottom:2px;">${book.title || outName}</div>
+            <div style="margin-bottom:8px;">${book.chapters.length} ${chapterWord}</div>
             <div class="status">Готово</div>
             <a href="${url}" download="${outName}">скачать ${outName}</a>
           `;
@@ -1334,7 +1186,7 @@
           updateUI();
         })
         .catch(err=>{
-          frame.innerHTML = `<div class="status" style="color:#f0554d">Ошибка: ${err && err.message ? err.message : 'не HEIC или повреждён'}</div>`;
+          frame.innerHTML = `<div class="status" style="color:#f0554d">Ошибка: ${err && err.message ? err.message : 'не удалось прочитать файл'}</div>`;
           console.error(err);
         });
     });
