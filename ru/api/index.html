@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ConvertHub — конвертер файлов онлайн в любой формат</title>
-<meta name="description" content="Конвертируйте изображения и другие файлы в любой формат прямо в браузере. Быстро, бесплатно, без загрузки на сервер.">
+<title>API для разработчиков — ConvertHub</title>
+<meta name="description" content="Мы разрабатываем публичный API для конвертации файлов из ваших приложений и скриптов — с документацией, ключами доступа и лимитами по тарифу.">
 <style>
   :root{
     --bg: #0f1117;
@@ -74,6 +74,7 @@
     transition: background 0.15s ease, color 0.15s ease;
   }
   .code-icon-btn:hover{ background: var(--bg-input); color: var(--text); }
+  .code-icon-btn.active-code{ background: rgba(79,127,255,0.14); color: var(--accent); }
   .code-icon-btn svg{ width:17px; height:17px; }
 
   .header-right{ display:flex; align-items:center; gap:10px; }
@@ -444,6 +445,46 @@
     .recent-arrow, .recent-time{ display:none; }
   }
 </style>
+<style>
+  .stub-main{ display:flex; align-items:center; justify-content:center; min-height: calc(100vh - var(--header-h) - 96px); }
+  .stub-card{
+    max-width:520px; text-align:center; padding:48px 40px;
+    border:1px solid var(--border); border-radius: var(--radius-lg);
+    background: var(--bg-elevated);
+  }
+  .stub-icon{
+    width:64px; height:64px; border-radius:16px; margin:0 auto 22px;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(79,127,255,0.14); color:#7aa0ff;
+  }
+  .stub-icon svg{ width:30px; height:30px; }
+  .stub-badge{
+    display:inline-block; font-size:11px; font-weight:700; letter-spacing:0.04em;
+    text-transform:uppercase; color:#7aa0ff; background: rgba(79,127,255,0.14);
+    padding:5px 11px; border-radius:20px; margin-bottom:14px;
+  }
+  .stub-card h1{ font-size:1.4rem; margin-bottom:10px; }
+  .stub-card p{ color: var(--text-dim); font-size:14px; line-height:1.6; margin-bottom:26px; }
+  .stub-form{ display:flex; gap:8px; }
+  .stub-form input{
+    flex:1; background: var(--bg-input); border:1px solid var(--border); color:var(--text);
+    padding:11px 14px; border-radius:9px; font-size:14px; outline:none;
+  }
+  .stub-form input:focus{ border-color: var(--accent); }
+  .stub-form button{
+    background: var(--accent); color:#fff; border:none; padding:11px 18px;
+    border-radius:9px; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap;
+    transition: background 0.15s ease;
+  }
+  .stub-form button:hover{ background: var(--accent-dim); }
+  .stub-back{ display:inline-block; margin-top:20px; font-size:13px; color: var(--text-dim); text-decoration:none; }
+  .stub-back:hover{ color: var(--text); }
+  @media (max-width:480px){
+    .stub-card{ padding:36px 24px; }
+    .stub-form{ flex-direction:column; }
+  }
+</style>
+
 </head>
 <body>
 <header id="siteHeader">
@@ -457,7 +498,7 @@
     </button>
     <a class="brand" href="/ru/"><span class="logo">C</span> ConvertHub</a>
     <span class="brand-divider"></span>
-    <a class="code-icon-btn" href="/ru/api/" aria-label="API для разработчиков" title="API для разработчиков">
+    <a class="code-icon-btn active-code" href="/ru/api/" aria-label="API для разработчиков" title="API для разработчиков">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg>
     </a>
   </div>
@@ -475,7 +516,7 @@
 </header>
 
 <nav class="icon-rail" id="iconRail" aria-label="Быстрая навигация">
-  <a class="rail-btn active" href="/ru/" aria-label="Главная" title="Главная">
+  <a class="rail-btn" href="/ru/" aria-label="Главная" title="Главная">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg>
   </a>
   <a class="rail-btn" href="/ru/apps/" aria-label="Все инструменты" title="Все инструменты">
@@ -497,10 +538,10 @@
 <aside class="sidebar" id="sidebar" aria-hidden="false">
   <div class="sidebar-section">
     <div class="sidebar-title">Главная</div>
-    <button class="sidebar-link active" data-action="scroll-top">
+    <a class="sidebar-link" href="/ru/">
       <span class="sl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v9a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-9"/></svg></span>
       <span class="sl-label">Конвертер файлов</span>
-    </button>
+    </a>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Конвертация</div>
@@ -550,168 +591,17 @@
   </div>
 </aside>
 
-<main>
-  <h1>Конвертер файлов</h1>
-  <p class="sub">Сконвертируйте ваши файлы в любой формат прямо в браузере — без загрузки на сервер.</p>
-
-  <div class="convert-widget" id="dropzone">
-    <input type="file" id="fileInput" multiple style="display:none">
-
-    <div class="cw-stats hidden" id="cwStats">
-      <button type="button" class="cw-stats-close" id="cwStatsClose" aria-label="Скрыть">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>
-      </button>
-      Мы преобразовали <b id="cwStatsFiles">3 309 088</b> файлов общим размером <b id="cwStatsSize">60 086</b> ГБ
-    </div>
-
-    <div class="cw-choose-row">
-      <button type="button" class="cw-choose-btn" id="chooseFilesBtn">
-        <svg class="cw-choose-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><circle cx="16" cy="14" r="2.4"/><path d="M20 17.6 22 20"/></svg>
-        Выберите файлы
-      </button>
-      <button type="button" class="cw-cloud-btn" title="Dropbox — скоро" data-toast="Загрузка из Dropbox скоро появится">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="m6 2 6 3.8L6 9.6 0 5.8 6 2Zm12 0 6 3.8-6 3.8-6-3.8L18 2ZM0 13.4l6-3.8 6 3.8-6 3.8-6-3.8Zm18-3.8 6 3.8-6 3.8-6-3.8 6-3.8ZM6 17.9l6-3.8 6 3.8-6 3.7-6-3.7Z"/></svg>
-      </button>
-      <button type="button" class="cw-cloud-btn" title="Google Drive — скоро" data-toast="Загрузка из Google Drive скоро появится">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.6 2h8.8l7.1 12.3-4.4 7.7H4.9L.5 14.3 7.6 2Zm1.1 2-5.4 9.4h10.8L8.7 4Zm2 10.4L6.3 22h11.4l-2.1-3.7-4.9-3.9Zm7.3-1L13.9 22h5.6l3-5.3-3.5-5.3ZM8.1 4l4.4 7.6h5.4L13.5 4H8.1Z"/></svg>
-      </button>
-    </div>
-
-    <div class="cw-formats-row">
-      <div class="fmt-picker" id="sourcePicker">
-        <button type="button" class="fmt-btn dark" id="sourceBtn">
-          <span id="sourceBtnLabel">HEIC</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="fmt-dropdown fmt-dropdown-source" id="sourceDropdown">
-          <button type="button" class="fmt-chip">HEIC</button>
-          <button type="button" class="fmt-chip">HEIF</button>
-        </div>
-      </div>
-
-      <span class="cw-arrow">в</span>
-
-      <div class="fmt-picker" id="targetPicker">
-        <button type="button" class="fmt-btn light" id="targetBtn">
-          <span id="targetBtnLabel">Выберите формат</span>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
-        </button>
-        <div class="fmt-dropdown fmt-dropdown-target" id="targetDropdown">
-          <div class="fmt-search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="fmtSearch" placeholder="Поиск">
-          </div>
-          <div class="fmt-body">
-            <div class="fmt-categories" id="fmtCategories">
-              <button type="button" class="fmt-cat active" data-cat="image">Изображение <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
-              <button type="button" class="fmt-cat" data-cat="doc">Документ <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
-              <button type="button" class="fmt-cat" data-cat="ebook">Электронная книга <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
-              <button type="button" class="fmt-cat" data-cat="vector">Вектор <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
-            </div>
-            <div class="fmt-grid" id="fmtGrid"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cw-hint">Перетащите файлы сюда · 1 GB максимальный размер файла или <a id="registerLink">Регистрация</a></div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section-title">★ Популярные форматы</div>
-  <div class="popular-formats" id="popularFormats">
-    <div class="pf-chip" data-code="JPG"><span class="pf-icon" style="background:#3ecf8e">JPG</span><div><div class="pf-name">JPG</div><div class="pf-sub">Изображение</div></div></div>
-    <div class="pf-chip" data-code="PNG"><span class="pf-icon" style="background:#4f7fff">PNG</span><div><div class="pf-name">PNG</div><div class="pf-sub">Изображение</div></div></div>
-    <div class="pf-chip" data-code="WEBP"><span class="pf-icon" style="background:#a86bff">WEBP</span><div><div class="pf-name">WEBP</div><div class="pf-sub">Изображение</div></div></div>
-    <div class="pf-chip" data-code="AVIF"><span class="pf-icon" style="background:#f0554d">AVIF</span><div><div class="pf-name">AVIF</div><div class="pf-sub">Изображение</div></div></div>
-    <div class="pf-chip" data-code="PDF"><span class="pf-icon" style="background:#e0554d">PDF</span><div><div class="pf-name">PDF</div><div class="pf-sub">Документ</div></div></div>
-    <div class="pf-chip" data-code="TIFF"><span class="pf-icon" style="background:#e0a83a">TIFF</span><div><div class="pf-name">TIFF</div><div class="pf-sub">Изображение</div></div></div>
-    <div class="pf-chip" data-action="toast" data-toast="Полный список форматов — в выборе формата выше"><span class="pf-icon" style="background:#4b5062">•••</span><div><div class="pf-name">Ещё</div><div class="pf-sub">100+ форматов</div></div></div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="section-title">Почему ConvertHub</div>
-  <div class="why-grid">
-    <div class="why-card">
-      <div class="why-icon" style="background:rgba(79,127,255,0.14); color:#7aa0ff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8Z"/></svg></div>
-      <h3>Быстрая конвертация</h3>
-      <p>Мгновенная обработка файлов без ожидания в очереди.</p>
-    </div>
-    <div class="why-card">
-      <div class="why-icon" style="background:rgba(62,207,142,0.14); color:#3ecf8e"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3Z"/></svg></div>
-      <h3>Безопасность</h3>
-      <p>Файлы не загружаются на сервер и полностью защищены.</p>
-    </div>
-    <div class="why-card">
-      <div class="why-icon" style="background:rgba(168,107,255,0.14); color:#c39bff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 9a4.5 4.5 0 0 0 0 9c2.5 0 3.7-2 5-4.5C13.3 11 14.5 9 17 9a4.5 4.5 0 0 1 0 9 4.5 4.5 0 0 1-4-2.3"/></svg></div>
-      <h3>Любые форматы</h3>
-      <p>Конвертация в более чем 100 форматов файлов.</p>
-    </div>
-  </div>
-
-  <hr class="divider">
-
-  <div class="recent-header">
-    <div class="section-title" style="margin-bottom:0">🕘 Недавние конвертации</div>
-    <a href="/ru/history/">Смотреть все</a>
-  </div>
-  <div class="recent-list">
-    <div class="recent-row">
-      <div class="recent-file">
-        <span class="recent-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-7-6Z"/><path d="M13 2v6h7"/></svg></span>
-        <div>
-          <div class="recent-file-name">IMG_2024.HEIC</div>
-          <div class="recent-file-meta">HEIC · 2.4 MB</div>
-        </div>
-      </div>
-      <span class="recent-arrow">→</span>
-      <div class="recent-file">
-        <span class="recent-badge" style="background:rgba(62,207,142,0.15); color:#3ecf8e">JPG</span>
-        <div>
-          <div class="recent-file-name">IMG_2024.jpg</div>
-          <div class="recent-file-meta">1.8 MB</div>
-        </div>
-      </div>
-      <span class="recent-time">2 мин. назад</span>
-    </div>
-    <div class="recent-row">
-      <div class="recent-file">
-        <span class="recent-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-7-6Z"/><path d="M13 2v6h7"/></svg></span>
-        <div>
-          <div class="recent-file-name">photo.heic</div>
-          <div class="recent-file-meta">HEIC · 1.7 MB</div>
-        </div>
-      </div>
-      <span class="recent-arrow">→</span>
-      <div class="recent-file">
-        <span class="recent-badge" style="background:rgba(79,127,255,0.15); color:#7aa0ff">PNG</span>
-        <div>
-          <div class="recent-file-name">photo.png</div>
-          <div class="recent-file-meta">3.1 MB</div>
-        </div>
-      </div>
-      <span class="recent-time">15 мин. назад</span>
-    </div>
-    <div class="recent-row">
-      <div class="recent-file">
-        <span class="recent-file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-7-6Z"/><path d="M13 2v6h7"/></svg></span>
-        <div>
-          <div class="recent-file-name">image.heic</div>
-          <div class="recent-file-meta">HEIC · 3.2 MB</div>
-        </div>
-      </div>
-      <span class="recent-arrow">→</span>
-      <div class="recent-file">
-        <span class="recent-badge" style="background:rgba(168,107,255,0.15); color:#c39bff">WEBP</span>
-        <div>
-          <div class="recent-file-name">image.webp</div>
-          <div class="recent-file-meta">2.1 MB</div>
-        </div>
-      </div>
-      <span class="recent-time">1 ч. назад</span>
-    </div>
+<main class="stub-main">
+  <div class="stub-card">
+    <div class="stub-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg></div>
+    <span class="stub-badge">Скоро</span>
+    <h1>API для разработчиков</h1>
+    <p>Мы разрабатываем публичный API для конвертации файлов из ваших приложений и скриптов — с документацией, ключами доступа и лимитами по тарифу.</p>
+    <form class="stub-form" id="notifyForm">
+      <input type="email" placeholder="Ваш email" required>
+      <button type="submit">Уведомить меня</button>
+    </form>
+    <a class="stub-back" href="/ru/">← Вернуться к конвертеру файлов</a>
   </div>
 </main>
 
@@ -721,7 +611,6 @@
   (function initSidebar(){
     const header = document.getElementById('siteHeader');
     const btn = document.getElementById('menuTriggerBtn');
-    const icon = document.getElementById('menuTriggerIcon');
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
 
@@ -737,7 +626,6 @@
 
     const isMobile = () => window.matchMedia('(max-width: 900px)').matches;
 
-    // Мобильный режим: оверлей открыт/закрыт
     function setMobileOpen(open){
       sidebar.classList.toggle('open', open);
       overlay.classList.toggle('open', open);
@@ -746,7 +634,6 @@
       sidebar.setAttribute('aria-hidden', String(!open));
     }
 
-    // Десктоп: сворачивание в иконочную рейлу
     function setCollapsed(collapsed){
       document.body.classList.toggle('sidebar-collapsed', collapsed);
       btn.setAttribute('aria-expanded', String(!collapsed));
@@ -766,31 +653,6 @@
     });
     overlay.addEventListener('click', ()=> setMobileOpen(false));
     document.addEventListener('keydown', e=>{ if(e.key === 'Escape') setMobileOpen(false); });
-
-    sidebar.querySelectorAll('.sidebar-link').forEach(link=>{
-      link.addEventListener('click', (e)=>{
-        const action = link.dataset.action;
-        if(action === 'scroll-top'){
-          document.getElementById('dropzone')?.scrollIntoView({behavior:'smooth', block:'center'});
-        } else if(action === 'toast'){
-          e.preventDefault();
-          showToast(link.dataset.toast || 'Скоро появится');
-        }
-        if(isMobile()) setMobileOpen(false);
-      });
-    });
-  })();
-
-  (function initStatsBar(){
-    const bar = document.getElementById('cwStats');
-    const closeBtn = document.getElementById('cwStatsClose');
-    if(localStorage.getItem('ch_stats_dismissed') === '1'){
-      bar.classList.add('hidden');
-    }
-    closeBtn.addEventListener('click', ()=>{
-      bar.classList.add('hidden');
-      localStorage.setItem('ch_stats_dismissed', '1');
-    });
   })();
 
   function showToast(msg){
@@ -807,10 +669,6 @@
     showToast._timer = setTimeout(()=> t.classList.remove('show'), 2400);
   }
 
-  document.querySelectorAll('.cw-cloud-btn').forEach(b=>{
-    b.addEventListener('click', ()=> showToast(b.dataset.toast || 'Скоро появится'));
-  });
-
   document.querySelectorAll('.theme-seg').forEach(seg=>{
     seg.addEventListener('click', e=>{
       document.querySelectorAll('.theme-seg').forEach(s=>{ s.classList.remove('active'); s.setAttribute('aria-pressed','false'); });
@@ -819,209 +677,25 @@
       showToast(e.currentTarget.dataset.toast || 'Скоро появится');
     });
   });
-  document.getElementById('sidebarThemeBtn').addEventListener('click', e=>{
-    showToast(e.currentTarget.dataset.toast || 'Скоро появится');
-  });
-
+  const sidebarThemeBtn = document.getElementById('sidebarThemeBtn');
+  if(sidebarThemeBtn){
+    sidebarThemeBtn.addEventListener('click', e=>{
+      showToast(e.currentTarget.dataset.toast || 'Скоро появится');
+    });
+  }
   document.getElementById('registerBtn').addEventListener('click', e=>{
     e.preventDefault();
     showToast('Регистрация скоро появится');
   });
-  document.getElementById('registerLink').addEventListener('click', e=>{
-    e.preventDefault();
-    showToast('Регистрация скоро появится');
-  });
-
-  /* ===== Виджет выбора форматов (тот же список, что на /ru/heic/) =====
-     Здесь ничего не конвертирует — реальная конвертация и лимиты живут на
-     /ru/heic/, сюда пользователь просто выбирает формат, а дальше его
-     перенаправляет handleFiles(). */
-  let targetFormat = null;
-  let selectedTargetCode = null;
-
-  const IMAGE_FORMATS = [
-    {code:'JPG', enabled:true}, {code:'PNG', enabled:true}, {code:'JPEG', enabled:true},
-    {code:'WEBP', enabled:true}, {code:'TIFF', enabled:true}, {code:'GIF', enabled:true},
-    {code:'BMP', enabled:true}, {code:'PSD', enabled:true}, {code:'HDR', enabled:true},
-    {code:'JPE', enabled:true}, {code:'ICO', enabled:true}, {code:'JFIF', enabled:true},
-    {code:'RGB', enabled:true}, {code:'JPS', enabled:true}, {code:'CUR', enabled:true},
-    {code:'JIF', enabled:true}, {code:'WBMP', enabled:true}, {code:'PPM', enabled:true},
-    {code:'PGM', enabled:true}, {code:'TGA', enabled:true}, {code:'PBM', enabled:true},
-    {code:'MTV', enabled:true}, {code:'PAM', enabled:true}, {code:'PFM', enabled:true},
-    {code:'PICON', enabled:true}, {code:'PNM', enabled:true}, {code:'RAS', enabled:true},
-    {code:'RGBA', enabled:true}, {code:'SGI', enabled:true}, {code:'SUN', enabled:true},
-    {code:'XBM', enabled:true}, {code:'XPM', enabled:true}, {code:'JFI', enabled:true},
-  ];
-  function toFormats(codes){ return codes.map(code => ({code, enabled:false})); }
-  const FORMATS = {
-    image: IMAGE_FORMATS,
-    doc: toFormats(['PDF','DOC','DOCX','XPS','DOCM','DOTX','ABW','AW','ODT','RTF','DOT','DOTM','DJVU','DBK','KWD','SXW','OXPS']),
-    ebook: [
-      {code:'EPUB', enabled:true}, {code:'FB2', enabled:true}, {code:'TXT', enabled:true},
-      {code:'PDB', enabled:true},
-    ],
-    // SVG/EPS/PS/AI реально конвертируются на /ru/heic/ (см. рассуждение и
-    // энкодеры там) — здесь просто даём их выбрать, а handleFiles() ниже
-    // редиректит HEIC-файл на /ru/heic/?to=<код>.
-    vector: [
-      {code:'SVG', enabled:true}, {code:'EPS', enabled:true},
-      {code:'PS', enabled:true}, {code:'AI', enabled:true},
-    ],
-  };
-  const CAT_LABELS = { image:'Изображение', doc:'Документ', ebook:'Электронная книга', vector:'Вектор' };
-  let currentCategory = 'image';
-
-  function selectTargetFormat(code){
-    selectedTargetCode = code;
-    targetFormat = code;
-    document.getElementById('targetBtnLabel').textContent = code;
-    renderFmtGrid(document.getElementById('fmtSearch').value);
-    closeAllDropdowns();
-  }
-
-  function renderFmtGrid(filter){
-    const grid = document.getElementById('fmtGrid');
-    const q = (filter || '').trim().toUpperCase();
-    const list = FORMATS[currentCategory] || [];
-    grid.innerHTML = '';
-    const matches = list.filter(f => !q || f.code.includes(q));
-    matches.forEach(f=>{
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'fmt-chip' + (f.enabled ? '' : ' disabled') + (f.code === selectedTargetCode ? ' active' : '');
-      btn.textContent = f.code;
-      if(f.enabled){
-        btn.addEventListener('click', ()=> selectTargetFormat(f.code));
-      } else {
-        btn.addEventListener('click', ()=> showToast(`${f.code} — конвертация скоро появится`));
-      }
-      grid.appendChild(btn);
-    });
-    if(!matches.length){
-      grid.innerHTML = '<div class="fmt-empty">Ничего не найдено</div>';
-    }
-  }
-  renderFmtGrid('');
-
-  document.getElementById('fmtSearch').addEventListener('input', e=> renderFmtGrid(e.target.value));
-
-  function switchCategory(cat){
-    const key = cat.dataset.cat;
-    if(key === currentCategory) return;
-    currentCategory = key;
-    document.querySelectorAll('.fmt-cat').forEach(c=>c.classList.remove('active'));
-    cat.classList.add('active');
-    document.getElementById('fmtSearch').value = '';
-    renderFmtGrid('');
-    const hasWorkingFormat = (FORMATS[key] || []).some(f => f.enabled);
-    if(key !== 'image' && key !== 'ebook' && !hasWorkingFormat){
-      showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
-    }
-  }
-  document.querySelectorAll('.fmt-cat').forEach(cat=>{
-    cat.addEventListener('click', e=>{ e.stopPropagation(); switchCategory(cat); });
-    cat.addEventListener('mouseenter', ()=> switchCategory(cat));
-  });
-
-  document.querySelectorAll('#sourceDropdown .fmt-chip').forEach(chip=>{
-    chip.addEventListener('click', e=>{
-      e.stopPropagation();
-      document.getElementById('sourceBtnLabel').textContent = chip.textContent;
-      closeAllDropdowns();
-    });
-  });
-
-  function closeAllDropdowns(){
-    document.querySelectorAll('.fmt-dropdown.open').forEach(d=>d.classList.remove('open'));
-    document.querySelectorAll('.fmt-btn.open').forEach(b=>b.classList.remove('open'));
-  }
-  function setupPicker(btnId, dropdownId){
-    const btn = document.getElementById(btnId);
-    const dropdown = document.getElementById(dropdownId);
-    btn.addEventListener('click', e=>{
-      e.stopPropagation();
-      const wasOpen = dropdown.classList.contains('open');
-      closeAllDropdowns();
-      if(!wasOpen){
-        dropdown.classList.add('open');
-        btn.classList.add('open');
-      }
-    });
-    dropdown.addEventListener('click', e=> e.stopPropagation());
-  }
-  setupPicker('sourceBtn', 'sourceDropdown');
-  setupPicker('targetBtn', 'targetDropdown');
-  document.addEventListener('click', closeAllDropdowns);
-  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeAllDropdowns(); });
-
-  document.querySelectorAll('#popularFormats .pf-chip').forEach(chip=>{
-    chip.addEventListener('click', ()=>{
-      const code = chip.dataset.code;
-      if(code){
-        selectTargetFormat(code);
-        showToast(`Выбран формат ${code} — теперь выберите файл`);
-      } else if(chip.dataset.action === 'toast'){
-        showToast(chip.dataset.toast || 'Скоро появится');
-      }
-      document.getElementById('dropzone')?.scrollIntoView({behavior:'smooth', block:'center'});
-    });
-  });
-
-  document.querySelectorAll('[data-action="toast"]').forEach(el=>{
-    if(el.closest('.sidebar') || el.closest('#popularFormats')) return; // уже подключены выше
-    el.addEventListener('click', e=>{
+  const notifyForm = document.getElementById('notifyForm');
+  if(notifyForm){
+    notifyForm.addEventListener('submit', e=>{
       e.preventDefault();
-      showToast(el.dataset.toast || 'Скоро появится');
+      showToast('Спасибо! Мы сообщим вам, когда это будет готово');
+      notifyForm.reset();
     });
-  });
-
-  document.getElementById('chooseFilesBtn').addEventListener('click', ()=> fileInput.click());
-
-  const dropzone = document.getElementById('dropzone');
-  const fileInput = document.getElementById('fileInput');
-
-  ['dragenter','dragover'].forEach(evt=>{
-    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.add('drag'); });
-  });
-  ['dragleave','drop'].forEach(evt=>{
-    dropzone.addEventListener(evt, e=>{ e.preventDefault(); dropzone.classList.remove('drag'); });
-  });
-  dropzone.addEventListener('drop', e=> handleFiles(e.dataTransfer.files));
-  fileInput.addEventListener('change', e=> handleFiles(e.target.files));
-
-  /* Реально работает конвертация HEIC/HEIF → JPG/PNG и др. на /ru/heic/, а
-     также конвертация книг (TXT/MD/HTML/FB2/EPUB → EPUB/FB2/TXT/PDB) на
-     /ru/ebook/ (там же лимиты и сама конвертация — см. соответствующие
-     страницы). Отсюда, с главной, нужно сначала выбрать формат — если не
-     выбран, открываем дропдаун и просим выбрать; дальше перенаправляем на
-     нужную страницу с уже выбранным форматом в параметре; остальные форматы
-     — заглушка с тостом "скоро". */
-  const EBOOK_SOURCE_EXT = /\.(txt|md|markdown|html?|fb2|epub)$/i;
-  function handleFiles(fileList){
-    const file = fileList[0];
-    if(!file) return;
-
-    if(!targetFormat){
-      showToast('Сначала выберите формат, в который конвертировать');
-      const targetBtn = document.getElementById('targetBtn');
-      const targetDropdown = document.getElementById('targetDropdown');
-      closeAllDropdowns();
-      targetDropdown.classList.add('open');
-      targetBtn.classList.add('open');
-      return;
-    }
-
-    if(/\.(heic|heif)$/i.test(file.name)){
-      showToast('Обнаружен HEIC-файл — переходим к конвертации…');
-      setTimeout(()=>{ window.location.href = `/ru/heic/?to=${selectedTargetCode.toLowerCase()}`; }, 900);
-    } else if(currentCategory === 'ebook' && EBOOK_SOURCE_EXT.test(file.name)){
-      showToast('Переходим к конвертации книги…');
-      setTimeout(()=>{ window.location.href = `/ru/ebook/?to=${selectedTargetCode.toLowerCase()}`; }, 900);
-    } else {
-      const ext = (file.name.split('.').pop() || 'файл').toUpperCase();
-      showToast(`Конвертация формата ${ext} скоро появится — пока доступен HEIC → JPG/PNG`);
-    }
   }
 </script>
+
 </body>
 </html>
