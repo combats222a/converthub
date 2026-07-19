@@ -699,7 +699,18 @@
       btn.className = 'fmt-chip' + (f.enabled ? '' : ' disabled') + (f.code === selectedTargetCode ? ' active' : '');
       btn.textContent = f.code;
       if(f.enabled){
-        btn.addEventListener('click', ()=> selectTargetFormat(f.code));
+        btn.addEventListener('click', ()=>{
+          if(currentCategory === 'ebook'){
+            // Эта страница конвертирует только HEIC/HEIF — книжный движок
+            // живёт на /ru/ebook/. Переходим туда только когда реально
+            // выбрали формат книги, а не просто открыли раздел для обзора.
+            closeAllDropdowns();
+            showToast('Переходим в конвертер книг…');
+            setTimeout(()=>{ window.location.href = `/ru/ebook/?to=${f.code.toLowerCase()}`; }, 700);
+            return;
+          }
+          selectTargetFormat(f.code);
+        });
       } else {
         btn.addEventListener('click', ()=> showToast(`${f.code} — конвертация скоро появится`));
       }
@@ -727,19 +738,15 @@
   document.getElementById('fmtSearch').addEventListener('input', e=> renderFmtGrid(e.target.value));
 
   // Переключение раздела — сетка форматов справа перерисовывается под выбранный
-  // раздел; эта страница конвертирует только HEIC/HEIF-изображения, поэтому
-  // при выборе раздела «Электронная книга» сразу отправляем на /ru/ebook/ —
-  // там уже настоящий движок конвертации книг.
+  // раздел. Раньше клик по вкладке «Электронная книга» сразу перекидывал на
+  // /ru/ebook/ — это был баг: пользователь ещё ничего не выбрал, а его уже
+  // уносило со страницы. Теперь просто показываем список форматов книги, а
+  // переход на /ru/ebook/ происходит только по клику на конкретный формат
+  // (см. renderFmtGrid выше).
   document.querySelectorAll('.fmt-cat').forEach(cat=>{
     cat.addEventListener('click', e=>{
       e.stopPropagation();
       const key = cat.dataset.cat;
-      if(key === 'ebook'){
-        closeAllDropdowns();
-        showToast('Переходим в конвертер книг…');
-        setTimeout(()=>{ window.location.href = '/ru/ebook/'; }, 700);
-        return;
-      }
       if(key === currentCategory) return;
       currentCategory = key;
       document.querySelectorAll('.fmt-cat').forEach(c=>c.classList.remove('active'));
@@ -747,7 +754,8 @@
       document.getElementById('fmtSearch').value = '';
       renderFmtGrid('');
       // "Скоро появится" показываем только для разделов, где вообще нет ни
-      // одного рабочего формата — в "Векторе" теперь SVG/EPS/PS/AI реальные.
+      // одного рабочего формата — в "Векторе" теперь SVG/EPS/PS/AI реальные,
+      // в "Электронной книге" — EPUB/FB2/TXT/PDB (уводят на /ru/ebook/).
       const hasWorkingFormat = (FORMATS[key] || []).some(f => f.enabled);
       if(key !== 'image' && !hasWorkingFormat){
         showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
