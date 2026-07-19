@@ -489,7 +489,13 @@
       {code:'PDB', enabled:true},
     ],
     font: toFormats(['PS']),
-    vector: toFormats(['SVG','EPS','AI']),
+    // SVG/EPS/PS/AI реально конвертируются на /ru/heic/ (см. рассуждение и
+    // энкодеры там) — здесь просто даём их выбрать, а handleFiles() ниже
+    // редиректит HEIC-файл на /ru/heic/?to=<код>.
+    vector: [
+      {code:'SVG', enabled:true}, {code:'EPS', enabled:true},
+      {code:'PS', enabled:true}, {code:'AI', enabled:true},
+    ],
     cad: toFormats(['DXF']),
   };
   const CAT_LABELS = { image:'Изображение', doc:'Документ', ebook:'Электронная книга', font:'Шрифт', vector:'Вектор', cad:'CAD' };
@@ -539,7 +545,8 @@
       cat.classList.add('active');
       document.getElementById('fmtSearch').value = '';
       renderFmtGrid('');
-      if(key !== 'image' && key !== 'ebook'){
+      const hasWorkingFormat = (FORMATS[key] || []).some(f => f.enabled);
+      if(key !== 'image' && key !== 'ebook' && !hasWorkingFormat){
         showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
       }
     });

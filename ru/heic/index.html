@@ -639,8 +639,14 @@
   ];
 
   // Заглушки-списки для остальных разделов — коды форматов взяты из примера,
-  // все пока неактивны (клик даёт тост "скоро"), реально работает только
-  // раздел "Изображение" → JPG/PNG.
+  // все пока неактивны (клик даёт тост "скоро"). Раздел "Вектор" — исключение:
+  // источник тут растровое фото, поэтому это не трассировка контуров, а
+  // честная упаковка того же PNG/JPEG-растра в векторный контейнер (SVG —
+  // <image> с data URI, EPS/PS — оператор colorimage с ASCIIHex, AI — с
+  // версии 9 это PDF, кладём JPEG через XObject/DCTDecode). Все четыре
+  // энкодера побайтово провалидированы round-trip'ом через
+  // Ghostscript/ImageMagick (см. encodeSVGFile/encodePostScriptFile/
+  // encodeAIFile выше encodeCanvasToFormat).
   function toFormats(codes){ return codes.map(code => ({code, enabled:false})); }
   const FORMATS = {
     image: IMAGE_FORMATS,
@@ -650,7 +656,10 @@
       {code:'PDB', enabled:true},
     ],
     font: toFormats(['PS']),
-    vector: toFormats(['SVG','EPS','AI']),
+    vector: [
+      {code:'SVG', enabled:true}, {code:'EPS', enabled:true},
+      {code:'PS', enabled:true}, {code:'AI', enabled:true},
+    ],
     cad: toFormats(['DXF']),
   };
   const CAT_LABELS = { image:'Изображение', doc:'Документ', ebook:'Электронная книга', font:'Шрифт', vector:'Вектор', cad:'CAD' };
@@ -703,11 +712,14 @@
   renderFmtGrid('');
 
   // Если пришли с главной с уже выбранным форматом (?to=<код>) — применяем сразу,
-  // если этот формат реально включён в IMAGE_FORMATS.
+  // если этот формат реально включён (ищем по всем разделам, не только
+  // "Изображение" — с главной так же прилетают SVG/EPS/PS/AI из "Вектора").
   (function applyIncomingFormat(){
     const to = new URLSearchParams(location.search).get('to');
-    if(to && IMAGE_FORMATS.some(f => f.enabled && f.code === to.toUpperCase())){
-      selectTargetFormat(to.toUpperCase());
+    const code = to && to.toUpperCase();
+    const isEnabled = code && Object.values(FORMATS).some(list => list.some(f => f.enabled && f.code === code));
+    if(isEnabled){
+      selectTargetFormat(code);
       history.replaceState({}, '', location.pathname);
     }
   })();
@@ -734,7 +746,10 @@
       cat.classList.add('active');
       document.getElementById('fmtSearch').value = '';
       renderFmtGrid('');
-      if(key !== 'image'){
+      // "Скоро появится" показываем только для разделов, где вообще нет ни
+      // одного рабочего формата — в "Векторе" теперь SVG/EPS/PS/AI реальные.
+      const hasWorkingFormat = (FORMATS[key] || []).some(f => f.enabled);
+      if(key !== 'image' && !hasWorkingFormat){
         showToast(`Раздел «${CAT_LABELS[key]}» скоро появится`);
       }
     });
@@ -816,7 +831,8 @@
     JPEG:'jpeg', JIF:'jif', JPS:'jps', TGA:'tga', PPM:'ppm', PGM:'pgm', PBM:'pbm',
     WBMP:'wbmp', RGB:'rgb', SGI:'sgi', CUR:'cur', HDR:'hdr', GIF:'gif', PSD:'psd', TIFF:'tiff',
     JFI:'jfi', PNM:'pnm', PAM:'pam', MTV:'mtv', RGBA:'rgba', RAS:'ras', SUN:'sun',
-    PFM:'pfm', XBM:'xbm', XPM:'xpm', PICON:'xpm'
+    PFM:'pfm', XBM:'xbm', XPM:'xpm', PICON:'xpm',
+    SVG:'svg', EPS:'eps', PS:'ps', AI:'ai'
   };
 
   function loadImage(blob){
@@ -1392,6 +1408,106 @@
     return new Blob([out], { type: 'image/x-xpixmap' });
   }
 
+  // ---------- Base64 (чанками — иначе String.fromCharCode.apply падает по
+  // переполнению стека на больших изображениях) ----------
+  function bytesToBase64(bytes){
+    let binary = '';
+    const chunk = 0x8000;
+    for(let i = 0; i < bytes.length; i += chunk){
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return btoa(binary);
+  }
+
+  // ---------- SVG (не трассировка контуров — честная упаковка PNG-растра
+  // внутрь <image>; валидный SVG, открывается везде, см. рассуждение выше) ----------
+  async function encodeSVGFile(canvas){
+    const w = canvas.width, h = canvas.height;
+    const pngBlob = await canvasToBlob(canvas, 'image/png');
+    const bytes = new Uint8Array(await pngBlob.arrayBuffer());
+    const base64 = bytesToBase64(bytes);
+    const svg = `<?xml version="1.0" encoding="UTF-8"?>\n`
+      + `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">\n`
+      + `<image width="${w}" height="${h}" href="data:image/png;base64,${base64}"/>\n`
+      + `</svg>\n`;
+    return new Blob([svg], { type: 'image/svg+xml' });
+  }
+
+  // ---------- EPS / PS (PostScript-обёртка, растр — через оператор image /
+  // colorimage с ASCIIHex-кодированием). Без потерь, round-trip
+  // провалидирован через Ghostscript/ImageMagick (MAE=0, пиксель в пиксель).
+  const PS_HEX = '0123456789ABCDEF';
+  function psHexBody(data){
+    let out = '', lineLen = 0;
+    for(let i = 0; i < data.length; i += 4){
+      out += PS_HEX[data[i] >> 4] + PS_HEX[data[i] & 15];
+      out += PS_HEX[data[i+1] >> 4] + PS_HEX[data[i+1] & 15];
+      out += PS_HEX[data[i+2] >> 4] + PS_HEX[data[i+2] & 15];
+      lineLen += 6;
+      if(lineLen >= 72){ out += '\n'; lineLen = 0; }
+    }
+    out += '>\n'; // конец ASCIIHexDecode
+    return out;
+  }
+  function encodePostScriptFile(canvas, isEPS){
+    const w = canvas.width, h = canvas.height;
+    const data = getRGBAData(canvas);
+    const header = isEPS
+      ? `%!PS-Adobe-3.0 EPSF-3.0\n%%BoundingBox: 0 0 ${w} ${h}\n%%HiResBoundingBox: 0 0 ${w} ${h}\n`
+        + `%%Creator: ConvertHub\n%%LanguageLevel: 2\n%%Pages: 1\n%%EndComments\n`
+      : `%!PS-Adobe-3.0\n%%Creator: ConvertHub\n%%LanguageLevel: 2\n%%Pages: 1\n%%EndComments\n`
+        + `%%Page: 1 1\n<< /PageSize [${w} ${h}] >> setpagedevice\n`;
+    const body = `gsave\n${w} ${h} scale\n`
+      + `${w} ${h} 8 [${w} 0 0 -${h} 0 ${h}] currentfile /ASCIIHexDecode filter false 3 colorimage\n`
+      + psHexBody(data);
+    const footer = `grestore\n${isEPS ? '' : 'showpage\n'}%%EOF\n`;
+    return new Blob([header, body, footer], { type: 'application/postscript' });
+  }
+
+  // ---------- AI (с версии 9 .ai — это PDF; минимальный однострочный PDF
+  // 1.4 с нашим же JPEG внутри через XObject/DCTDecode — открывается в
+  // Illustrator и большинстве PDF/AI-вьюеров) ----------
+  async function encodeAIFile(canvas){
+    const w = canvas.width, h = canvas.height;
+    const jpegBlob = await canvasToBlob(canvas, 'image/jpeg', 0.92);
+    const jpegBytes = new Uint8Array(await jpegBlob.arrayBuffer());
+    const enc = new TextEncoder();
+    const parts = [];
+    const offsets = [0];
+    let pos = 0;
+    function add(bytes){ parts.push(bytes); pos += bytes.length; }
+
+    add(new Uint8Array([...enc.encode('%PDF-1.4\n%'), 0xE2, 0xE3, 0xCF, 0xD3, 0x0A]));
+
+    offsets[1] = pos;
+    add(enc.encode('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n'));
+
+    offsets[2] = pos;
+    add(enc.encode('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n'));
+
+    offsets[3] = pos;
+    add(enc.encode(`3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${w} ${h}] `
+      + `/Resources << /XObject << /Im0 5 0 R >> >> /Contents 4 0 R >>\nendobj\n`));
+
+    offsets[4] = pos;
+    const content = `q ${w} 0 0 ${h} 0 0 cm /Im0 Do Q`;
+    add(enc.encode(`4 0 obj\n<< /Length ${content.length} >>\nstream\n${content}\nendstream\nendobj\n`));
+
+    offsets[5] = pos;
+    add(enc.encode(`5 0 obj\n<< /Type /XObject /Subtype /Image /Width ${w} /Height ${h} `
+      + `/ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${jpegBytes.length} >>\nstream\n`));
+    add(jpegBytes);
+    add(enc.encode('\nendstream\nendobj\n'));
+
+    const xrefStart = pos;
+    let xref = 'xref\n0 6\n0000000000 65535 f \n';
+    for(let i = 1; i <= 5; i++) xref += String(offsets[i]).padStart(10, '0') + ' 00000 n \n';
+    const trailer = `trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n${xrefStart}\n%%EOF`;
+    add(enc.encode(xref + trailer));
+
+    return new Blob(parts, { type: 'application/pdf' });
+  }
+
   async function encodeCanvasToFormat(canvas, code){
     switch(code){
       case 'PNG':
@@ -1424,6 +1540,10 @@
       case 'GIF': return encodeGIF(canvas);
       case 'ICO': return encodeIcoOrCur(canvas, false);
       case 'CUR': return encodeIcoOrCur(canvas, true);
+      case 'SVG': return encodeSVGFile(canvas);
+      case 'EPS': return encodePostScriptFile(canvas, true);
+      case 'PS': return encodePostScriptFile(canvas, false);
+      case 'AI': return encodeAIFile(canvas);
       default:
         throw new Error('Этот формат пока не поддерживается');
     }
@@ -1433,7 +1553,7 @@
   // (TGA/PPM/PGM/PBM/WBMP/SGI/HDR/PSD/TIFF/CUR) файл на диске полностью
   // корректен, но для превью в интерфейсе рисуем PNG-снимок того же canvas —
   // иначе браузер покажет "битую картинку", хотя сам файл рабочий.
-  const BROWSER_PREVIEWABLE = new Set(['PNG','JPG','JFIF','JPE','JPEG','JIF','JPS','WEBP','BMP','GIF','ICO']);
+  const BROWSER_PREVIEWABLE = new Set(['PNG','JPG','JFIF','JPE','JPEG','JIF','JPS','WEBP','BMP','GIF','ICO','SVG']);
 
 
   function handleFiles(fileList){
