@@ -57,40 +57,142 @@
   #counterBadge b{ color: var(--text); }
   #counterBadge.unlimited{ border-color: var(--ok); color: var(--ok); }
 
-  main{ max-width: 640px; margin: 0 auto; padding: 8vh 6vw 10vh; text-align:center; }
+  main{ max-width: 760px; margin: 0 auto; padding: 8vh 6vw 10vh; text-align:center; }
 
   h1{ font-size: clamp(1.8rem, 4vw, 2.4rem); font-weight:700; margin-bottom:12px; }
   .sub{ color: var(--text-dim); font-size:15px; margin-bottom:40px; line-height:1.5; }
 
-  .format-toggle{
-    display:inline-flex; gap:4px; margin-bottom:28px;
-    background: var(--bg-panel); padding:4px; border-radius:10px; border:1px solid var(--border);
-  }
-  .format-toggle button{
-    background:none; border:none; color:var(--text-dim);
-    padding: 8px 20px; cursor:pointer; border-radius:7px; font-size:14px; font-weight:500;
-  }
-  .format-toggle button.active{ background: var(--accent); color:#fff; }
-
-  .dropzone{
-    border:2px dashed var(--border);
-    border-radius:14px;
-    padding: 54px 30px;
-    text-align:center;
+  /* ===== Виджет конвертации (шахматный фон + выбор форматов) ===== */
+  .convert-widget{
     position:relative;
-    transition: border-color 0.2s ease, background 0.2s ease;
-    background: var(--bg-panel);
+    border-radius:16px;
+    padding: 26px 24px 20px;
+    text-align:left;
+    background-color: var(--bg-panel);
+    background-image:
+      radial-gradient(circle at 15% 0%, rgba(79,127,255,0.16), transparent 55%),
+      radial-gradient(circle at 100% 100%, rgba(122,160,255,0.12), transparent 50%),
+      radial-gradient(rgba(255,255,255,0.055) 1px, transparent 1px);
+    background-size: 100% 100%, 100% 100%, 20px 20px;
+    background-position: 0 0, 0 0, 0 0;
+    border:1px solid var(--border);
+    transition: border-color 0.2s ease, opacity 0.2s ease;
   }
-  .dropzone.drag{ border-color: var(--accent); background: #191c26; }
-  .dropzone.locked{ opacity:0.35; pointer-events:none; }
-  .dropzone input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .convert-widget.drag{ border-color: var(--accent); }
+  .convert-widget.locked{ opacity:0.4; pointer-events:none; }
 
-  .upload-btn{
-    display:inline-block; background: var(--accent); color:#fff; border:none;
-    padding: 13px 30px; border-radius:9px; font-size:15px; font-weight:600;
-    margin-bottom:14px; pointer-events:none;
+  .cw-top{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .cw-choose{ display:flex; align-items:center; gap:8px; }
+  .cw-choose-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background: var(--accent); color:#fff; border:none;
+    padding: 13px 22px; border-radius:9px; font-size:15px; font-weight:600;
+    cursor:pointer; transition: background 0.15s ease;
   }
-  .dz-hint{ font-size:13px; color: var(--text-dim); }
+  .cw-choose-btn:hover{ background: var(--accent-dim); }
+  .cw-choose-icon{ width:18px; height:18px; flex-shrink:0; }
+  .cw-cloud-btn{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:40px; height:40px; border-radius:9px; flex-shrink:0;
+    background: rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.08);
+    color: var(--text-dim); cursor:not-allowed; transition: color 0.15s ease;
+  }
+  .cw-cloud-btn svg{ width:18px; height:18px; }
+  .cw-cloud-btn:hover{ color: var(--text); }
+
+  .cw-formats{ display:flex; align-items:center; gap:10px; }
+  .cw-arrow{ color: var(--text-dim); font-size:14px; }
+
+  .fmt-picker{ position:relative; }
+  .fmt-btn{
+    display:inline-flex; align-items:center; gap:8px;
+    border:none; border-radius:9px; padding:12px 16px;
+    font-size:16px; font-weight:700; cursor:pointer;
+  }
+  .fmt-btn svg{ width:16px; height:16px; transition: transform 0.15s ease; flex-shrink:0; }
+  .fmt-btn.open svg{ transform: rotate(180deg); }
+  .fmt-btn.dark{ background:#0e0f13; color:#fff; border:1px solid var(--border); }
+  .fmt-btn.light{ background:#fff; color:#111; }
+
+  .fmt-dropdown{
+    display:none; position:absolute; top: calc(100% + 8px); left:0;
+    background: #17181d; border:1px solid var(--border); border-radius:12px;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.5);
+    z-index:60; padding:14px;
+  }
+  .fmt-dropdown.open{ display:block; }
+
+  .fmt-dropdown-source{ min-width:150px; display:none; }
+  .fmt-dropdown-source.open{ display:flex; flex-direction:column; gap:2px; }
+  .fmt-dropdown-source .fmt-chip{
+    background:none; border:none; color:var(--text); text-align:left;
+    padding:9px 10px; border-radius:7px; cursor:pointer; font-size:14px; font-weight:500;
+  }
+  .fmt-dropdown-source .fmt-chip:hover{ background: var(--bg-input); }
+
+  .fmt-dropdown-target{ width:420px; max-width:86vw; right:0; left:auto; }
+
+  .fmt-search{
+    display:flex; align-items:center; gap:8px;
+    border:1px solid var(--border); border-radius:8px; padding:8px 10px;
+    margin-bottom:12px;
+  }
+  .fmt-search svg{ width:16px; height:16px; color: var(--text-dim); flex-shrink:0; }
+  .fmt-search input{
+    background:none; border:none; outline:none; color:var(--text); font-size:14px; width:100%;
+  }
+
+  .fmt-body{ display:flex; gap:14px; }
+  .fmt-categories{
+    display:flex; flex-direction:column; gap:2px; min-width:150px;
+    border-right:1px solid var(--border); padding-right:12px;
+    max-height:280px; overflow-y:auto;
+  }
+  .fmt-cat{
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    background:none; border:none; color: var(--text-dim); text-align:left;
+    padding:8px 8px; border-radius:7px; font-size:13px; cursor:pointer; white-space:nowrap;
+  }
+  .fmt-cat svg{ width:14px; height:14px; flex-shrink:0; }
+  .fmt-cat:hover{ background: var(--bg-input); }
+  .fmt-cat.active{ color:#fff; background: rgba(255,255,255,0.05); }
+
+  .fmt-grid{
+    flex:1; display:grid; grid-template-columns: repeat(3, 1fr); gap:8px;
+    max-height:280px; overflow-y:auto; padding-right:4px; align-content:start;
+  }
+  .fmt-chip{
+    background: var(--bg-input); border:1px solid var(--border); color: var(--text);
+    padding:9px 4px; border-radius:7px; font-size:12px; font-weight:600;
+    cursor:pointer; text-align:center; transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .fmt-chip:hover{ border-color: var(--accent); }
+  .fmt-chip.active{ background: var(--accent); border-color: var(--accent); color:#fff; }
+  .fmt-chip.disabled{ opacity:0.4; cursor:not-allowed; }
+  .fmt-chip.disabled:hover{ border-color: var(--border); }
+  .fmt-empty{ grid-column: 1 / -1; color: var(--text-dim); font-size:13px; padding:20px 0; text-align:center; }
+
+  .cw-hint{ font-size:13px; color: var(--text-dim); margin-top:18px; }
+
+  .cw-toast{
+    position:fixed; left:50%; bottom:24px; transform: translate(-50%, 12px);
+    background:#1c1f28; border:1px solid var(--border); color:var(--text);
+    padding:10px 18px; border-radius:9px; font-size:13px;
+    opacity:0; pointer-events:none; transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index:500; box-shadow:0 10px 30px rgba(0,0,0,0.5);
+  }
+  .cw-toast.show{ opacity:1; transform: translate(-50%, 0); }
+
+  @media (max-width:480px){
+    .fmt-dropdown-target{ width:92vw; left:0; right:auto; }
+    .fmt-body{ flex-direction:column; }
+    .fmt-categories{
+      flex-direction:row; overflow-x:auto; border-right:none;
+      border-bottom:1px solid var(--border); padding-right:0; padding-bottom:8px;
+      min-width:0; max-height:none;
+    }
+    .fmt-grid{ max-height:220px; }
+  }
 
   .contact-sheet{
     margin-top: 28px;
@@ -223,15 +325,64 @@
   <h1>HEIC → JPG / PNG за секунды</h1>
   <p class="sub">Конвертация происходит прямо в браузере. Файлы никуда не загружаются.</p>
 
-  <div class="format-toggle">
-    <button data-fmt="jpeg" class="active">в JPG</button>
-    <button data-fmt="png">в PNG</button>
-  </div>
+  <div class="convert-widget" id="dropzone">
+    <input type="file" id="fileInput" accept=".heic,.heif" multiple style="display:none">
 
-  <div class="dropzone" id="dropzone">
-    <input type="file" id="fileInput" accept=".heic,.heif" multiple>
-    <div class="upload-btn">Выбрать изображения</div>
-    <div class="dz-hint" id="dzHint">или перетащите файлы сюда · до 20 за раз</div>
+    <div class="cw-top">
+      <div class="cw-choose">
+        <button type="button" class="cw-choose-btn" id="chooseFilesBtn">
+          <svg class="cw-choose-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z"/><circle cx="16" cy="14" r="2.4"/><path d="M20 17.6 22 20"/></svg>
+          Выберите файлы
+        </button>
+        <button type="button" class="cw-cloud-btn" title="Dropbox — скоро" data-toast="Загрузка из Dropbox скоро появится">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="m6 2 6 3.8L6 9.6 0 5.8 6 2Zm12 0 6 3.8-6 3.8-6-3.8L18 2ZM0 13.4l6-3.8 6 3.8-6 3.8-6-3.8Zm18-3.8 6 3.8-6 3.8-6-3.8 6-3.8ZM6 17.9l6-3.8 6 3.8-6 3.7-6-3.7Z"/></svg>
+        </button>
+        <button type="button" class="cw-cloud-btn" title="Google Drive — скоро" data-toast="Загрузка из Google Drive скоро появится">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M7.6 2h8.8l7.1 12.3-4.4 7.7H4.9L.5 14.3 7.6 2Zm1.1 2-5.4 9.4h10.8L8.7 4Zm2 10.4L6.3 22h11.4l-2.1-3.7-4.9-3.9Zm7.3-1L13.9 22h5.6l3-5.3-3.5-5.3ZM8.1 4l4.4 7.6h5.4L13.5 4H8.1Z"/></svg>
+        </button>
+      </div>
+
+      <div class="cw-formats">
+        <div class="fmt-picker" id="sourcePicker">
+          <button type="button" class="fmt-btn dark" id="sourceBtn">
+            <span id="sourceBtnLabel">HEIC</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="fmt-dropdown fmt-dropdown-source" id="sourceDropdown">
+            <button type="button" class="fmt-chip">HEIC</button>
+            <button type="button" class="fmt-chip">HEIF</button>
+          </div>
+        </div>
+
+        <span class="cw-arrow">в</span>
+
+        <div class="fmt-picker" id="targetPicker">
+          <button type="button" class="fmt-btn light" id="targetBtn">
+            <span id="targetBtnLabel">JPG</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div class="fmt-dropdown fmt-dropdown-target" id="targetDropdown">
+            <div class="fmt-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="text" id="fmtSearch" placeholder="Поиск">
+            </div>
+            <div class="fmt-body">
+              <div class="fmt-categories" id="fmtCategories">
+                <button type="button" class="fmt-cat active" data-cat="image">Изображение <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></button>
+                <button type="button" class="fmt-cat" data-cat="doc">Документ</button>
+                <button type="button" class="fmt-cat" data-cat="ebook">Электронная книга</button>
+                <button type="button" class="fmt-cat" data-cat="font">Шрифт</button>
+                <button type="button" class="fmt-cat" data-cat="vector">Вектор</button>
+                <button type="button" class="fmt-cat" data-cat="cad">CAD</button>
+              </div>
+              <div class="fmt-grid" id="fmtGrid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cw-hint" id="dzHint">Перетащите файлы сюда · до 20 за раз</div>
   </div>
 
   <div class="paywall" id="paywall">
@@ -301,7 +452,7 @@
       link.addEventListener('click', ()=>{
         const action = link.dataset.action;
         if(action === 'scroll-top'){
-          document.querySelector('.dropzone')?.scrollIntoView({behavior:'smooth', block:'center'});
+          document.getElementById('dropzone')?.scrollIntoView({behavior:'smooth', block:'center'});
         } else if(action === 'scroll-paywall'){
           document.querySelector('.paywall')?.scrollIntoView({behavior:'smooth', block:'center'});
         }
@@ -407,14 +558,135 @@
     });
   });
 
-  let targetFormat = 'jpeg';
-  document.querySelectorAll('.format-toggle button').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      document.querySelectorAll('.format-toggle button').forEach(b=>b.classList.remove('active'));
-      btn.classList.add('active');
-      targetFormat = btn.dataset.fmt;
+  /* ===== Виджет выбора форматов ===== */
+  let targetFormat = 'jpeg'; // реально конвертируем только в jpeg/png через heic2any
+  let selectedTargetCode = 'JPG';
+
+  // Список форматов "как в примере" — реально рабочие сейчас только JPG и PNG,
+  // остальное показано для вида (roadmap) и по клику даёт тост "скоро".
+  const IMAGE_FORMATS = [
+    {code:'JPG', enabled:true}, {code:'PNG', enabled:true}, {code:'JPEG', enabled:false},
+    {code:'WEBP', enabled:false}, {code:'SVG', enabled:false}, {code:'TIFF', enabled:false},
+    {code:'GIF', enabled:false}, {code:'BMP', enabled:false}, {code:'PSD', enabled:false},
+    {code:'HDR', enabled:false}, {code:'JBG', enabled:false}, {code:'JPE', enabled:false},
+    {code:'ICO', enabled:false}, {code:'PDB', enabled:false}, {code:'AVIF', enabled:false},
+    {code:'JFIF', enabled:false}, {code:'RGB', enabled:false}, {code:'JPS', enabled:false},
+    {code:'CUR', enabled:false}, {code:'EXR', enabled:false}, {code:'JIF', enabled:false},
+    {code:'HRZ', enabled:false}, {code:'WBMP', enabled:false}, {code:'MAP', enabled:false},
+    {code:'PPM', enabled:false}, {code:'IPL', enabled:false}, {code:'PGM', enabled:false},
+    {code:'JP2', enabled:false}, {code:'TGA', enabled:false}, {code:'DDS', enabled:false},
+    {code:'PCX', enabled:false}, {code:'PBM', enabled:false}, {code:'FAX', enabled:false},
+    {code:'FTS', enabled:false}, {code:'G3', enabled:false}, {code:'MNG', enabled:false},
+    {code:'MTV', enabled:false}, {code:'OTB', enabled:false}, {code:'PAL', enabled:false},
+    {code:'PALM', enabled:false}, {code:'PAM', enabled:false}, {code:'PCD', enabled:false},
+    {code:'PCT', enabled:false}, {code:'PFM', enabled:false}, {code:'PICON', enabled:false},
+    {code:'PICT', enabled:false}, {code:'PNM', enabled:false}, {code:'RAS', enabled:false},
+    {code:'RGBA', enabled:false}, {code:'RGBO', enabled:false}, {code:'SGI', enabled:false},
+    {code:'SUN', enabled:false}, {code:'UYVY', enabled:false}, {code:'VIFF', enabled:false},
+    {code:'XBM', enabled:false}, {code:'XPM', enabled:false}, {code:'XV', enabled:false},
+    {code:'XWD', enabled:false}, {code:'YUV', enabled:false}, {code:'JBIG', enabled:false},
+    {code:'G4', enabled:false}, {code:'RGF', enabled:false}, {code:'SIX', enabled:false},
+    {code:'SIXEL', enabled:false}, {code:'VIPS', enabled:false}, {code:'JFI', enabled:false},
+    {code:'PGX', enabled:false},
+  ];
+
+  function showToast(msg){
+    let t = document.getElementById('cwToast');
+    if(!t){
+      t = document.createElement('div');
+      t.id = 'cwToast';
+      t.className = 'cw-toast';
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._timer);
+    showToast._timer = setTimeout(()=> t.classList.remove('show'), 2200);
+  }
+
+  function selectTargetFormat(code){
+    selectedTargetCode = code;
+    targetFormat = code === 'PNG' ? 'png' : 'jpeg';
+    document.getElementById('targetBtnLabel').textContent = code;
+    renderFmtGrid(document.getElementById('fmtSearch').value);
+    closeAllDropdowns();
+  }
+
+  function renderFmtGrid(filter){
+    const grid = document.getElementById('fmtGrid');
+    const q = (filter || '').trim().toUpperCase();
+    grid.innerHTML = '';
+    const matches = IMAGE_FORMATS.filter(f => !q || f.code.includes(q));
+    matches.forEach(f=>{
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'fmt-chip' + (f.enabled ? '' : ' disabled') + (f.code === selectedTargetCode ? ' active' : '');
+      btn.textContent = f.code;
+      if(f.enabled){
+        btn.addEventListener('click', ()=> selectTargetFormat(f.code));
+      } else {
+        btn.addEventListener('click', ()=> showToast(`${f.code} — конвертация скоро появится`));
+      }
+      grid.appendChild(btn);
+    });
+    if(!matches.length){
+      grid.innerHTML = '<div class="fmt-empty">Ничего не найдено</div>';
+    }
+  }
+  renderFmtGrid('');
+
+  document.getElementById('fmtSearch').addEventListener('input', e=> renderFmtGrid(e.target.value));
+
+  // Раздел "Изображение" — единственный реально доступный сейчас; остальные — тост-заглушка.
+  document.querySelectorAll('.fmt-cat').forEach(cat=>{
+    cat.addEventListener('click', e=>{
+      e.stopPropagation();
+      if(cat.dataset.cat === 'image') return;
+      showToast(`Раздел «${cat.textContent.trim()}» скоро появится`);
     });
   });
+
+  // Источник — HEIC/HEIF, оба уже поддерживаются, чип просто обновляет подпись.
+  document.querySelectorAll('#sourceDropdown .fmt-chip').forEach(chip=>{
+    chip.addEventListener('click', e=>{
+      e.stopPropagation();
+      document.getElementById('sourceBtnLabel').textContent = chip.textContent;
+      closeAllDropdowns();
+    });
+  });
+
+  // Dropbox / Google Drive — пока заглушки.
+  document.querySelectorAll('.cw-cloud-btn').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      showToast(btn.dataset.toast || 'Скоро появится');
+    });
+  });
+
+  function closeAllDropdowns(){
+    document.querySelectorAll('.fmt-dropdown.open').forEach(d=>d.classList.remove('open'));
+    document.querySelectorAll('.fmt-btn.open').forEach(b=>b.classList.remove('open'));
+  }
+  function setupPicker(btnId, dropdownId){
+    const btn = document.getElementById(btnId);
+    const dropdown = document.getElementById(dropdownId);
+    btn.addEventListener('click', e=>{
+      e.stopPropagation();
+      const wasOpen = dropdown.classList.contains('open');
+      closeAllDropdowns();
+      if(!wasOpen){
+        dropdown.classList.add('open');
+        btn.classList.add('open');
+      }
+    });
+    dropdown.addEventListener('click', e=> e.stopPropagation());
+  }
+  setupPicker('sourceBtn', 'sourceDropdown');
+  setupPicker('targetBtn', 'targetDropdown');
+  document.addEventListener('click', closeAllDropdowns);
+  document.addEventListener('keydown', e=>{ if(e.key === 'Escape') closeAllDropdowns(); });
+
+  document.getElementById('chooseFilesBtn').addEventListener('click', ()=> fileInput.click());
 
   const dropzone = document.getElementById('dropzone');
   const fileInput = document.getElementById('fileInput');
