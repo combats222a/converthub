@@ -78,6 +78,7 @@
   }
   .code-icon-btn:hover{ background: var(--bg-input); color: var(--text); }
   .code-icon-btn svg{ width:17px; height:17px; }
+  .header-page-title{ font-size:14px; font-weight:600; color: var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 
   .header-right{ display:flex; align-items:center; gap:10px; }
   .theme-toggle-pill{
@@ -478,6 +479,9 @@
     .recent-row{ grid-template-columns: 1fr auto; grid-template-rows:auto auto; row-gap:6px; }
     .recent-arrow, .recent-time{ display:none; }
   }
+  @media (max-width:640px){
+    .header-page-title{ display:none; }
+  }
 </style>
 </head>
 <body>
@@ -495,6 +499,8 @@
     <a class="code-icon-btn" href="/ru/api/" aria-label="API для разработчиков" title="API для разработчиков">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6-6 6 6 6M15 6l6 6-6 6"/></svg>
     </a>
+    <span class="brand-divider"></span>
+    <span class="header-page-title">Конвертер файлов</span>
   </div>
   <div class="header-right">
     <div class="theme-toggle-pill" id="themeTogglePill" role="group" aria-label="Тема оформления">
@@ -626,8 +632,8 @@
     <div class="cw-formats-row">
       <div class="fmt-group">
         <div class="fmt-picker" id="sourcePicker">
-          <button type="button" class="fmt-btn dark" id="sourceBtn">
-            <span id="sourceBtnLabel">HEIC</span>
+          <button type="button" class="fmt-btn light" id="sourceBtn">
+            <span id="sourceBtnLabel">Выберите формат</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="fmt-dropdown fmt-dropdown-source" id="sourceDropdown">
@@ -979,6 +985,8 @@
     chip.addEventListener('click', e=>{
       e.stopPropagation();
       document.getElementById('sourceBtnLabel').textContent = chip.textContent;
+      document.getElementById('sourceBtn').classList.remove('light');
+      document.getElementById('sourceBtn').classList.add('dark');
       closeAllDropdowns();
     });
   });
@@ -1014,6 +1022,8 @@
     const oldSource = sourceLabel.textContent;
     const oldTarget = targetLabel.textContent;
     sourceLabel.textContent = oldTarget;
+    document.getElementById('sourceBtn').classList.remove('light');
+    document.getElementById('sourceBtn').classList.add('dark');
     selectTargetFormat(oldSource);
     showToast(`Теперь конвертируем из ${oldTarget} в ${oldSource}`);
   });
