@@ -204,7 +204,7 @@
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Конвертация</div>
-    <a class="sidebar-link" href="/ru/heic-jpg/">📷 HEIC → JPG / PNG</a>
+    <a class="sidebar-link" href="/ru/heic/">📷 HEIC → Конвертация в любой формат</a>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Аккаунт</div>
@@ -351,7 +351,7 @@
   fileInput.addEventListener('change', e=> handleFiles(e.target.files));
 
   /* Сейчас реально работает только конвертация HEIC/HEIF → JPG/PNG на
-     отдельной странице /ru/heic-jpg/. Отсюда, с главной, файл просто
+     отдельной странице /ru/heic/ (там можно выбрать формат). Отсюда, с главной, файл просто
      определяется по расширению и пользователь перенаправляется туда;
      остальные форматы — заглушка с тостом "скоро". */
   function handleFiles(fileList){
@@ -359,7 +359,7 @@
     if(!file) return;
     if(/\.(heic|heif)$/i.test(file.name)){
       showToast('Обнаружен HEIC-файл — переходим к конвертации…');
-      setTimeout(()=>{ window.location.href = '/ru/heic-jpg/'; }, 900);
+      setTimeout(()=>{ window.location.href = '/ru/heic/'; }, 900);
     } else {
       const ext = (file.name.split('.').pop() || 'файл').toUpperCase();
       showToast(`Конвертация формата ${ext} скоро появится — пока доступен HEIC → JPG/PNG`);

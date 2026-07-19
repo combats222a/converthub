@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HEIC в JPG и PNG онлайн — ConvertHub</title>
-<meta name="description" content="Конвертируйте HEIC-фото с iPhone в JPG или PNG прямо в браузере. Быстро и без загрузки на сервер.">
+<title>HEIC — конвертируйте в любой формат — ConvertHub</title>
+<meta name="description" content="Конвертируйте HEIC-фото с iPhone в JPG, PNG и другие форматы. Выберите нужный формат — конвертация происходит прямо в браузере.">
 <style>
   :root{
     --bg: #0e0f13;
@@ -336,7 +336,7 @@
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Конвертация</div>
-    <button class="sidebar-link active" data-action="scroll-top">📷 HEIC → JPG</button>
+    <button class="sidebar-link active" data-action="scroll-top">📷 HEIC → Конвертация в любой формат</button>
   </div>
   <div class="sidebar-section">
     <div class="sidebar-title">Аккаунт</div>
@@ -350,7 +350,7 @@
 </aside>
 
 <main>
-  <h1>HEIC → JPG / PNG за секунды</h1>
+  <h1>HEIC → выберите формат</h1>
   <p class="sub">Конвертация происходит прямо в браузере. Файлы никуда не загружаются.</p>
 
   <div class="convert-widget" id="dropzone">
@@ -397,7 +397,7 @@
 
         <div class="fmt-picker" id="targetPicker">
           <button type="button" class="fmt-btn light" id="targetBtn">
-            <span id="targetBtnLabel">JPG</span>
+            <span id="targetBtnLabel">Выберите формат</span>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
           </button>
           <div class="fmt-dropdown fmt-dropdown-target" id="targetDropdown">
@@ -611,8 +611,8 @@
   });
 
   /* ===== Виджет выбора форматов ===== */
-  let targetFormat = 'jpeg'; // реально конвертируем только в jpeg/png через heic2any
-  let selectedTargetCode = 'JPG';
+  let targetFormat = null; // пока пользователь не выбрал формат — конвертация недоступна
+  let selectedTargetCode = null;
 
   // Список форматов "как в примере" — реально рабочие сейчас только JPG и PNG,
   // остальное показано для вида (roadmap) и по клику даёт тост "скоро".
@@ -783,6 +783,16 @@
   fileInput.addEventListener('change', e=>{ handleFiles(e.target.files); });
 
   function handleFiles(fileList){
+    if(!targetFormat){
+      showToast('Сначала выберите формат, в который конвертировать');
+      const targetBtn = document.getElementById('targetBtn');
+      const targetDropdown = document.getElementById('targetDropdown');
+      closeAllDropdowns();
+      targetDropdown.classList.add('open');
+      targetBtn.classList.add('open');
+      return;
+    }
+
     Array.from(fileList).forEach(file=>{
       if(!isPaidNow() && getTodayCount() >= FREE_LIMIT){
         updateUI();
