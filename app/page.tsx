@@ -1,20 +1,45 @@
-import { Button } from "@/components/ui/button";
+import { ConvertProvider } from "@/components/home/convert-context";
+import { Hero } from "@/components/home/hero";
+import { UploadCard } from "@/components/home/upload-card";
+import { PopularFormats } from "@/components/home/popular-formats";
+import { WhyConvertHub } from "@/components/home/why-convert-hub";
+import { RecentConversions } from "@/components/home/recent-conversions";
+import { Toast } from "@/components/home/toast";
+import { Footer } from "@/components/layout/footer";
+
+function SectionTitle({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-4 flex items-center gap-1.5 text-xs font-bold tracking-[0.06em] text-muted-foreground uppercase">
+      {children}
+    </div>
+  );
+}
+
+function Divider() {
+  return <hr className="my-11 border-t border-border/60" />;
+}
 
 export default function Home() {
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center gap-4 p-8 text-center">
-      <h1 className="text-2xl font-semibold">ConvertHub v2</h1>
-      <p className="max-w-md text-muted-foreground">
-        Layout готов: фиксированный Header и оверлейный Sidebar (как в
-        Linear/GitHub/Notion) — открытие/закрытие двигает только сам Sidebar,
-        контент никогда не сдвигается. Реальные страницы и виджет конвертации
-        появятся на следующих шагах.
-      </p>
-      <div className="flex gap-2">
-        <Button>Primary</Button>
-        <Button variant="outline">Outline</Button>
-        <Button variant="secondary">Secondary</Button>
+    <ConvertProvider>
+      <div className="mx-auto max-w-[900px] px-6 pt-14 pb-24 text-left sm:px-10">
+        <Hero />
+        <UploadCard />
+
+        <Divider />
+        <SectionTitle>★ Популярные форматы</SectionTitle>
+        <PopularFormats />
+
+        <Divider />
+        <SectionTitle>Почему ConvertHub</SectionTitle>
+        <WhyConvertHub />
+
+        <Divider />
+        <RecentConversions />
       </div>
-    </div>
+
+      <Footer />
+      <Toast />
+    </ConvertProvider>
   );
 }
