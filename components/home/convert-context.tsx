@@ -6,6 +6,26 @@ import type { FormatCategory } from "@/lib/formats";
 
 export type OpenPicker = "source" | "target" | null;
 
+/** Как обрабатывать выбранный/сброшенный файл. */
+export type ConvertMode =
+  /** Домашняя страница: часть форматов уводит на отдельные страницы-конвертеры. */
+  | "redirect"
+  /** Отдельная страница-конвертер: конвертация выполняется на месте. */
+  | "process";
+
+export interface ConvertProviderProps {
+  children: React.ReactNode;
+  /** Категория форматов, открытая в пикере целевого формата по умолчанию. */
+  initialCategory?: FormatCategory;
+  /** Предзаполненный целевой формат (например, из ?to=). */
+  initialTargetCode?: string | null;
+  /** Список кодов в упрощённом (fixed-list) пикере исходного формата. */
+  sourceFormatOptions?: string[];
+  /** Список кодов в упрощённом (fixed-list) пикере целевого формата. */
+  targetFormatOptions?: string[];
+  mode?: ConvertMode;
+}
+
 interface ConvertContextValue {
   sourceLabel: string;
   sourceCode: string | null;
@@ -16,6 +36,9 @@ interface ConvertContextValue {
   toastMessage: string | null;
   toastVisible: boolean;
   dropzoneRef: React.RefObject<HTMLDivElement | null>;
+  sourceFormatOptions: string[];
+  targetFormatOptions: string[];
+  mode: ConvertMode;
   setCategory: (cat: FormatCategory) => void;
   setOpenPicker: (p: OpenPicker) => void;
   selectSourceFormat: (code: string) => void;
@@ -27,12 +50,21 @@ interface ConvertContextValue {
 
 const ConvertContext = createContext<ConvertContextValue | null>(null);
 
-export function ConvertProvider({ children }: { children: React.ReactNode }) {
+const DEFAULT_SOURCE_FORMAT_OPTIONS = ["HEIC", "HEIF"];
+
+export function ConvertProvider({
+  children,
+  initialCategory = "image",
+  initialTargetCode = null,
+  sourceFormatOptions = DEFAULT_SOURCE_FORMAT_OPTIONS,
+  targetFormatOptions = [],
+  mode = "redirect",
+}: ConvertProviderProps) {
   const [sourceLabel, setSourceLabel] = useState("Выберите формат");
   const [sourceCode, setSourceCode] = useState<string | null>(null);
-  const [targetLabel, setTargetLabel] = useState("Выберите формат");
-  const [targetCode, setTargetCode] = useState<string | null>(null);
-  const [category, setCategory] = useState<FormatCategory>("image");
+  const [targetLabel, setTargetLabel] = useState(initialTargetCode ?? "Выберите формат");
+  const [targetCode, setTargetCode] = useState<string | null>(initialTargetCode);
+  const [category, setCategory] = useState<FormatCategory>(initialCategory);
   const [openPicker, setOpenPicker] = useState<OpenPicker>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastVisible, setToastVisible] = useState(false);
@@ -88,6 +120,9 @@ export function ConvertProvider({ children }: { children: React.ReactNode }) {
         toastMessage,
         toastVisible,
         dropzoneRef,
+        sourceFormatOptions,
+        targetFormatOptions,
+        mode,
         setCategory,
         setOpenPicker,
         selectSourceFormat,

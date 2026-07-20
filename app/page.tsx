@@ -1,10 +1,7 @@
-import { ConvertProvider } from "@/components/home/convert-context";
-import { Hero } from "@/components/home/hero";
-import { UploadCard } from "@/components/home/upload-card";
+import { Converter } from "@/components/converter/converter";
 import { PopularFormats } from "@/components/home/popular-formats";
 import { WhyConvertHub } from "@/components/home/why-convert-hub";
 import { RecentConversions } from "@/components/home/recent-conversions";
-import { Toast } from "@/components/home/toast";
 import { Footer } from "@/components/layout/footer";
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
@@ -21,25 +18,23 @@ function Divider() {
 
 export default function Home() {
   return (
-    <ConvertProvider>
+    <>
       <div className="mx-auto max-w-[900px] px-6 pt-14 pb-24 text-left sm:px-10">
-        <Hero />
-        <UploadCard />
+        <Converter>
+          <Divider />
+          <SectionTitle>★ Популярные форматы</SectionTitle>
+          <PopularFormats />
 
-        <Divider />
-        <SectionTitle>★ Популярные форматы</SectionTitle>
-        <PopularFormats />
+          <Divider />
+          <SectionTitle>Почему ConvertHub</SectionTitle>
+          <WhyConvertHub />
 
-        <Divider />
-        <SectionTitle>Почему ConvertHub</SectionTitle>
-        <WhyConvertHub />
-
-        <Divider />
-        <RecentConversions />
+          <Divider />
+          <RecentConversions />
+        </Converter>
       </div>
 
       <Footer />
-      <Toast />
-    </ConvertProvider>
+    </>
   );
 }

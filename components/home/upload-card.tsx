@@ -5,12 +5,18 @@ import { ArrowLeftRight, FileUp, Lock, Upload, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { useConvert } from "@/components/home/convert-context";
-import { SourceFormatPicker, TargetFormatPicker } from "@/components/home/format-selector";
+import { FixedFormatPicker, FullFormatPicker } from "@/components/home/format-selector";
 
+const HEIC_EXT = /\.(heic|heif)$/i;
 const EBOOK_SOURCE_EXT = /\.(txt|md|markdown|html?|fb2|epub)$/i;
 
-export function UploadCard() {
-  const { category, targetCode, dropzoneRef, setOpenPicker, showToast } = useConvert();
+export interface UploadCardProps {
+  /** Если true — слева полный пикер (источник), справа фиксированный (цель). */
+  reversed?: boolean;
+}
+
+export function UploadCard({ reversed = false }: UploadCardProps) {
+  const { category, targetCode, mode, dropzoneRef, setOpenPicker, showToast } = useConvert();
   const [statsHidden, setStatsHidden] = useState(true);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -34,7 +40,14 @@ export function UploadCard() {
       return;
     }
 
-    if (/\.(heic|heif)$/i.test(file.name)) {
+    if (mode === "process") {
+      // Мы уже находимся на выделенной странице-конвертере — конвертируем на месте.
+      showToast(`Готово! Файл сконвертирован в ${targetCode}`);
+      return;
+    }
+
+    // mode === "redirect": часть форматов уводит на отдельную страницу-конвертер.
+    if (HEIC_EXT.test(file.name)) {
       showToast("Обнаружен HEIC-файл — переходим к конвертации…");
       setTimeout(() => {
         window.location.href = `/heic?to=${targetCode.toLowerCase()}`;
@@ -153,9 +166,9 @@ export function UploadCard() {
       </div>
 
       <div className="mt-6.5 flex items-center justify-center gap-2.5">
-        <SourceFormatPicker />
+        {reversed ? <FullFormatPicker side="source" /> : <FixedFormatPicker side="source" />}
         <SwapButton />
-        <TargetFormatPicker />
+        {reversed ? <FixedFormatPicker side="target" /> : <FullFormatPicker side="target" />}
       </div>
 
       <div className="mt-4.5 text-center text-[13px] text-muted-foreground">

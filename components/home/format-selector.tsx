@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import { CATEGORY_LABELS, FORMATS, type FormatCategory } from "@/lib/formats";
 import { useConvert } from "@/components/home/convert-context";
 
+type PickerSide = "source" | "target";
+
 function useCloseOnOutside(open: boolean, onClose: () => void) {
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -29,35 +31,59 @@ function useCloseOnOutside(open: boolean, onClose: () => void) {
   return ref;
 }
 
-/** Простой источник — HEIC/HEIF, как в исходном виджете. */
-export function SourceFormatPicker() {
-  const { sourceLabel, sourceCode, openPicker, setOpenPicker, selectSourceFormat } = useConvert();
-  const open = openPicker === "source";
+/** Общий хук: достаёт для указанной стороны (source/target) лейбл, код и сеттер. */
+function useSideState(side: PickerSide) {
+  const ctx = useConvert();
+  return side === "source"
+    ? {
+        label: ctx.sourceLabel,
+        code: ctx.sourceCode,
+        select: ctx.selectSourceFormat,
+        fixedOptions: ctx.sourceFormatOptions,
+      }
+    : {
+        label: ctx.targetLabel,
+        code: ctx.targetCode,
+        select: ctx.selectTargetFormat,
+        fixedOptions: ctx.targetFormatOptions,
+      };
+}
+
+/**
+ * Упрощённый пикер — короткий фиксированный список кодов (например,
+ * HEIC/HEIF или набор форматов книг). Список задаётся на уровне
+ * ConvertProvider через `sourceFormatOptions`/`targetFormatOptions`, так что
+ * этот компонент не завязан на конкретную страницу.
+ */
+export function FixedFormatPicker({ side }: { side: PickerSide }) {
+  const { label, code, select, fixedOptions } = useSideState(side);
+  const { openPicker, setOpenPicker } = useConvert();
+  const open = openPicker === side;
   const ref = useCloseOnOutside(open, () => setOpenPicker(null));
 
   return (
     <div className="relative" ref={ref}>
       <button
         type="button"
-        onClick={() => setOpenPicker(open ? null : "source")}
+        onClick={() => setOpenPicker(open ? null : side)}
         className={cn(
           "inline-flex items-center gap-2 rounded-md border border-border bg-input px-4 py-3 text-base font-bold",
-          sourceCode ? "text-foreground" : "text-muted-foreground"
+          code ? "text-foreground" : "text-muted-foreground"
         )}
       >
-        <span>{sourceLabel}</span>
+        <span>{label}</span>
         <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
       {open && (
         <div className="absolute top-[calc(100%+8px)] left-0 z-20 flex min-w-[150px] flex-col gap-0.5 rounded-xl border border-border bg-popover p-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
-          {["HEIC", "HEIF"].map((code) => (
+          {fixedOptions.map((c) => (
             <button
-              key={code}
+              key={c}
               type="button"
-              onClick={() => selectSourceFormat(code)}
+              onClick={() => select(c)}
               className="rounded-md px-2.5 py-2.5 text-left text-sm font-medium text-foreground hover:bg-input"
             >
-              {code}
+              {c}
             </button>
           ))}
         </div>
@@ -66,19 +92,11 @@ export function SourceFormatPicker() {
   );
 }
 
-/** Целевой формат — поиск + категории + сетка кодов. */
-export function TargetFormatPicker() {
-  const {
-    targetLabel,
-    targetCode,
-    category,
-    setCategory,
-    openPicker,
-    setOpenPicker,
-    selectTargetFormat,
-    showToast,
-  } = useConvert();
-  const open = openPicker === "target";
+/** Полный пикер — поиск + категории + сетка кодов из lib/formats.ts. */
+export function FullFormatPicker({ side }: { side: PickerSide }) {
+  const { label, code, select } = useSideState(side);
+  const { category, setCategory, openPicker, setOpenPicker, showToast } = useConvert();
+  const open = openPicker === side;
   const ref = useCloseOnOutside(open, () => setOpenPicker(null));
   const [query, setQuery] = useState("");
 
@@ -102,13 +120,13 @@ export function TargetFormatPicker() {
     <div className="relative" ref={ref}>
       <button
         type="button"
-        onClick={() => setOpenPicker(open ? null : "target")}
+        onClick={() => setOpenPicker(open ? null : side)}
         className={cn(
           "inline-flex items-center gap-2 rounded-md border border-border bg-input px-4 py-3 text-base font-bold",
-          targetCode ? "text-foreground" : "text-muted-foreground"
+          code ? "text-foreground" : "text-muted-foreground"
         )}
       >
-        <span>{targetLabel}</span>
+        <span>{label}</span>
         <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
       {open && (
@@ -149,13 +167,11 @@ export function TargetFormatPicker() {
                   key={f.code}
                   type="button"
                   onClick={() =>
-                    f.enabled
-                      ? selectTargetFormat(f.code)
-                      : showToast(`${f.code} — конвертация скоро появится`)
+                    f.enabled ? select(f.code) : showToast(`${f.code} — конвертация скоро появится`)
                   }
                   className={cn(
                     "rounded-md border border-border bg-input px-1 py-2.5 text-center text-xs font-semibold text-foreground transition-colors hover:border-primary",
-                    f.code === targetCode && "border-primary bg-primary text-primary-foreground",
+                    f.code === code && "border-primary bg-primary text-primary-foreground",
                     !f.enabled && "cursor-not-allowed opacity-40 hover:border-border"
                   )}
                 >
