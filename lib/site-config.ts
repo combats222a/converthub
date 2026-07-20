@@ -7,7 +7,7 @@
  * обновятся автоматически, без правок по всему проекту.
  */
 
-const DEFAULT_SITE_URL = "https://converthub-sand.vercel.app";
+const DEFAULT_SITE_URL = "https://convertcontext.vercel.app";
 
 function normalizeUrl(url: string): string {
   return url.replace(/\/+$/, "");
