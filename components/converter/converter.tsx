@@ -23,6 +23,8 @@ export interface ConverterProps {
   targetFormatOptions?: string[];
   /** Поменять местами: слева полный пикер (источник), справа фиксированный (цель). */
   reversed?: boolean;
+  /** Форсирует фиксированный пикер цели даже без reversed — для узких лендингов (например /heic-jpg). */
+  fixedTarget?: boolean;
   /** "redirect" — часть форматов уводит на отдельную страницу (главная страница). */
   /** "process" — конвертация выполняется прямо на этой странице. */
   mode?: ConvertMode;
@@ -49,6 +51,7 @@ export function Converter({
   sourceFormatOptions,
   targetFormatOptions,
   reversed = false,
+  fixedTarget = false,
   mode = "redirect",
   children,
 }: ConverterProps) {
@@ -61,7 +64,7 @@ export function Converter({
       mode={mode}
     >
       {showHero && <Hero heading={heading} description={description} />}
-      <UploadCard reversed={reversed} />
+      <UploadCard reversed={reversed} fixedTarget={fixedTarget} />
       {children}
       <Toast />
     </ConvertProvider>

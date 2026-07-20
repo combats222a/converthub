@@ -1,5 +1,16 @@
 import type { LucideIcon } from "lucide-react";
-import { ArrowLeftRight, BookOpen, CreditCard, ImageIcon, LifeBuoy, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeftRight,
+  BookOpen,
+  CreditCard,
+  History,
+  ImageIcon,
+  LayoutGrid,
+  LifeBuoy,
+  Settings,
+  ShieldCheck,
+  Star,
+} from "lucide-react";
 
 export interface NavLink {
   href: string;
@@ -18,6 +29,7 @@ export const NAV_SECTIONS: NavSection[] = [
   {
     title: "Конвертация",
     items: [
+      { href: "/apps", label: "Все инструменты", icon: LayoutGrid },
       {
         href: "/heic",
         label: "HEIC → в любой формат",
@@ -39,8 +51,18 @@ export const NAV_SECTIONS: NavSection[] = [
     ],
   },
   {
+    title: "Мои файлы",
+    items: [
+      { href: "/history", label: "История конвертаций", icon: History },
+      { href: "/favorites", label: "Избранное", icon: Star },
+    ],
+  },
+  {
     title: "Аккаунт",
-    items: [{ href: "/pricing", label: "Тарифы и подписка", icon: CreditCard }],
+    items: [
+      { href: "/pricing", label: "Тарифы и подписка", icon: CreditCard },
+      { href: "/settings", label: "Настройки", icon: Settings },
+    ],
   },
   {
     title: "Информация",

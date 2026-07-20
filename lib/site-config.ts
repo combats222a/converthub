@@ -23,4 +23,18 @@ export const siteConfig = {
 } as const;
 
 /** Статические маршруты сайта — единый список для sitemap.ts. */
-export const STATIC_ROUTES = ["/", "/heic", "/heic-to", "/ebook"] as const;
+export const STATIC_ROUTES = [
+  "/",
+  "/heic",
+  "/heic-to",
+  "/heic-jpg",
+  "/ebook",
+  "/apps",
+  "/pricing",
+  "/privacy",
+  "/support",
+  "/history",
+  "/favorites",
+  "/settings",
+  "/api",
+] as const;

@@ -67,21 +67,21 @@ export function FixedFormatPicker({ side }: { side: PickerSide }) {
         type="button"
         onClick={() => setOpenPicker(open ? null : side)}
         className={cn(
-          "inline-flex items-center gap-2 rounded-md border border-border bg-input px-4 py-3 text-base font-bold",
+          "inline-flex items-center gap-1.5 rounded-lg border border-border/70 bg-white/[0.03] px-3 py-2 text-[13px] font-semibold transition-colors hover:border-white/20",
           code ? "text-foreground" : "text-muted-foreground"
         )}
       >
         <span>{label}</span>
-        <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("size-3.5 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <div className="absolute top-[calc(100%+8px)] left-0 z-20 flex min-w-[150px] flex-col gap-0.5 rounded-xl border border-border bg-popover p-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
+        <div className="absolute top-[calc(100%+8px)] left-0 z-20 flex min-w-[150px] flex-col gap-0.5 rounded-xl border border-border bg-popover p-3.5 shadow-[0_20px_45px_-20px_rgba(0,0,0,0.5)]">
           {fixedOptions.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => select(c)}
-              className="rounded-md px-2.5 py-2.5 text-left text-sm font-medium text-foreground hover:bg-input"
+              className="rounded-md px-2.5 py-2.5 text-left text-sm font-medium text-foreground hover:bg-white/[0.05]"
             >
               {c}
             </button>
@@ -122,16 +122,16 @@ export function FullFormatPicker({ side }: { side: PickerSide }) {
         type="button"
         onClick={() => setOpenPicker(open ? null : side)}
         className={cn(
-          "inline-flex items-center gap-2 rounded-md border border-border bg-input px-4 py-3 text-base font-bold",
+          "inline-flex items-center gap-1.5 rounded-lg border border-border/70 bg-white/[0.03] px-3 py-2 text-[13px] font-semibold transition-colors hover:border-white/20",
           code ? "text-foreground" : "text-muted-foreground"
         )}
       >
         <span>{label}</span>
-        <ChevronDown className={cn("size-4 shrink-0 transition-transform", open && "rotate-180")} />
+        <ChevronDown className={cn("size-3.5 shrink-0 transition-transform", open && "rotate-180")} />
       </button>
       {open && (
-        <div className="absolute top-[calc(100%+8px)] right-0 left-auto z-20 w-[420px] max-w-[86vw] rounded-xl border border-border bg-popover p-3.5 shadow-[0_18px_40px_rgba(0,0,0,0.5)]">
-          <div className="mb-3 flex items-center gap-2 rounded-md border border-border px-2.5 py-2">
+        <div className="absolute top-[calc(100%+8px)] right-0 left-auto z-20 w-[420px] max-w-[86vw] rounded-xl border border-border bg-popover p-3.5 shadow-[0_20px_45px_-20px_rgba(0,0,0,0.5)]">
+          <div className="mb-3 flex items-center gap-2 rounded-md border border-border/70 px-2.5 py-2">
             <Search className="size-4 shrink-0 text-muted-foreground" />
             <input
               value={query}
@@ -148,7 +148,7 @@ export function FullFormatPicker({ side }: { side: PickerSide }) {
                   type="button"
                   onClick={() => handleCategoryChange(cat)}
                   className={cn(
-                    "flex items-center justify-between gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-left text-[13px] text-muted-foreground hover:bg-input",
+                    "flex items-center justify-between gap-1.5 whitespace-nowrap rounded-md px-2 py-2 text-left text-[13px] text-muted-foreground hover:bg-white/[0.05]",
                     cat === category && "bg-white/5 text-foreground"
                   )}
                 >
@@ -170,9 +170,9 @@ export function FullFormatPicker({ side }: { side: PickerSide }) {
                     f.enabled ? select(f.code) : showToast(`${f.code} — конвертация скоро появится`)
                   }
                   className={cn(
-                    "rounded-md border border-border bg-input px-1 py-2.5 text-center text-xs font-semibold text-foreground transition-colors hover:border-primary",
+                    "rounded-md border border-border/70 bg-white/[0.03] px-1 py-2.5 text-center text-xs font-semibold text-foreground transition-colors hover:border-primary",
                     f.code === code && "border-primary bg-primary text-primary-foreground",
-                    !f.enabled && "cursor-not-allowed opacity-40 hover:border-border"
+                    !f.enabled && "cursor-not-allowed opacity-40 hover:border-border/70"
                   )}
                 >
                   {f.code}

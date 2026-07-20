@@ -9,10 +9,10 @@ export function Hero({
 }: HeroProps) {
   return (
     <>
-      <h1 className="mb-2.5 text-[clamp(1.7rem,3.2vw,2.15rem)] font-bold tracking-[-0.01em]">
+      <h1 className="mb-3 text-[clamp(1.7rem,3.2vw,2.15rem)] font-bold tracking-[-0.01em]">
         {heading}
       </h1>
-      <p className="mb-8.5 max-w-[560px] text-[14.5px] leading-[1.55] text-muted-foreground">
+      <p className="mb-8 max-w-[560px] text-[14.5px] leading-[1.55] text-muted-foreground">
         {description}
       </p>
     </>
