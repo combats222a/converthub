@@ -5,9 +5,9 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "Все инструменты — ConvertHub";
+const TITLE = "Все инструменты — ConvertContext";
 const DESCRIPTION =
-  "Здесь появится каталог всех конвертеров ConvertHub — с поиском и фильтрами по типу файла. Пока доступны конвертер HEIC и книг — ссылки на них есть в разделе «Конвертация» слева.";
+  "Здесь появится каталог всех конвертеров ConvertContext — с поиском и фильтрами по типу файла. Пока доступны конвертер HEIC и книг — ссылки на них есть в разделе «Конвертация» слева.";
 const PATH = "/apps";
 
 export const metadata = buildMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });
@@ -22,7 +22,7 @@ export default function AppsPage() {
         description={DESCRIPTION}
         icon={<LayoutGrid className="size-7" strokeWidth={1.8} />}
         stubTitle="Каталог инструментов"
-        stubDescription="Здесь появится полный каталог всех конвертеров ConvertHub"
+        stubDescription="Здесь появится полный каталог всех конвертеров ConvertContext"
         features={[
           {
             icon: <Search className="size-4.5" />,

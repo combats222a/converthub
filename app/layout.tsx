@@ -4,7 +4,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig } from "@/lib/site-config";
 
-const HOME_TITLE = "ConvertHub — конвертер файлов онлайн в любой формат";
+const HOME_TITLE = "ConvertContext — конвертер файлов онлайн в любой формат";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),

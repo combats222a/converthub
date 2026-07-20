@@ -6,7 +6,7 @@ import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
- * Light/dark segmented toggle. ConvertHub defaults to dark (set on <html>
+ * Light/dark segmented toggle. ConvertContext defaults to dark (set on <html>
  * in the root layout); this only flips the `dark` class on the document
  * element client-side.
  */

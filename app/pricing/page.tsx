@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "Тарифы и подписка — ConvertHub";
+const TITLE = "Тарифы и подписка — ConvertContext";
 const DESCRIPTION =
   "Мы готовим тарифные планы с увеличенным лимитом размера файла, пакетной конвертацией и приоритетной обработкой. Базовая конвертация останется бесплатной и без регистрации.";
 const PATH = "/pricing";

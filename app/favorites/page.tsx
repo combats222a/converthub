@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "Избранное — ConvertHub";
+const TITLE = "Избранное — ConvertContext";
 const DESCRIPTION =
   "Скоро вы сможете закреплять часто используемые форматы и конвертеры здесь, чтобы быстро находить их снова.";
 const PATH = "/favorites";

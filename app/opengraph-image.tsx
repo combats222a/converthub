@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "ConvertHub — конвертер файлов онлайн в любой формат";
+export const alt = "ConvertContext — конвертер файлов онлайн в любой формат";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -31,7 +31,7 @@ export default async function Image() {
             }}
           />
           <div style={{ display: "flex", fontSize: 44, fontWeight: 700, color: "#e8e9ed" }}>
-            ConvertHub
+            ConvertContext
           </div>
         </div>
         <div

@@ -36,7 +36,7 @@ export function Header({ sidebarOpen, onMenuClick }: HeaderProps) {
           <span className="flex size-6.5 items-center justify-center rounded-md bg-gradient-to-br from-primary to-blue-600 text-xs text-white">
             C
           </span>
-          <span>ConvertHub</span>
+          <span>ConvertContext</span>
         </Link>
 
         <div className="hidden h-5 w-px shrink-0 bg-border sm:block" />

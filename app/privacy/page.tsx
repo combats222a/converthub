@@ -5,9 +5,9 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "Конфиденциальность — ConvertHub";
+const TITLE = "Конфиденциальность — ConvertContext";
 const DESCRIPTION =
-  "Мы заканчиваем оформление политики конфиденциальности. Уже сейчас все конвертации происходят локально в вашем браузере — файлы не загружаются на сервер ConvertHub.";
+  "Мы заканчиваем оформление политики конфиденциальности. Уже сейчас все конвертации происходят локально в вашем браузере — файлы не загружаются на сервер ConvertContext.";
 const PATH = "/privacy";
 
 export const metadata = buildMetadata({ title: TITLE, description: DESCRIPTION, path: PATH });

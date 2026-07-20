@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "История конвертаций — ConvertHub";
+const TITLE = "История конвертаций — ConvertContext";
 const DESCRIPTION =
   "Полная история ваших конвертаций с возможностью повторного скачивания появится здесь после того, как заработают аккаунты. Сейчас последние конвертации показаны на главной странице.";
 const PATH = "/history";

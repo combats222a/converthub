@@ -24,7 +24,7 @@ const CARDS = [
   },
 ];
 
-export function WhyConvertHub() {
+export function WhyConvertContext() {
   return (
     <div className="grid grid-cols-3 gap-3.5 max-[900px]:grid-cols-1">
       {CARDS.map((card) => (

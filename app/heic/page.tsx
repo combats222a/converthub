@@ -4,7 +4,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig } from "@/lib/site-config";
 import { HeicPageClient } from "./heic-page-client";
 
-const TITLE = "HEIC — конвертируйте в любой формат — ConvertHub";
+const TITLE = "HEIC — конвертируйте в любой формат — ConvertContext";
 const DESCRIPTION =
   "Конвертируйте HEIC-фото с iPhone в JPG, PNG и другие форматы. Выберите нужный формат — конвертация происходит прямо в браузере.";
 const PATH = "/heic";

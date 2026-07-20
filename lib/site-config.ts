@@ -14,7 +14,7 @@ function normalizeUrl(url: string): string {
 }
 
 export const siteConfig = {
-  name: "ConvertHub",
+  name: "ConvertContext",
   url: normalizeUrl(process.env.NEXT_PUBLIC_SITE_URL || DEFAULT_SITE_URL),
   locale: "ru_RU",
   language: "ru",

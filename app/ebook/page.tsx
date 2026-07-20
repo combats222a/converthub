@@ -4,7 +4,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig } from "@/lib/site-config";
 import { EbookPageClient } from "./ebook-page-client";
 
-const TITLE = "Конвертер электронных книг — ConvertHub";
+const TITLE = "Конвертер электронных книг — ConvertContext";
 const DESCRIPTION =
   "Конвертируйте электронные книги и текстовые файлы EPUB, FB2, TXT, MD, HTML и PDB в нужный формат прямо в браузере — без загрузки на сервер.";
 const PATH = "/ebook";

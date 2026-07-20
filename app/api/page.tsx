@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "API для разработчиков — ConvertHub";
+const TITLE = "API для разработчиков — ConvertContext";
 const DESCRIPTION =
   "Мы разрабатываем публичный API для конвертации файлов из ваших приложений и скриптов — с документацией, ключами доступа и лимитами по тарифу.";
 const PATH = "/api";

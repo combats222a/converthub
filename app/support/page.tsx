@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "Поддержка — ConvertHub";
+const TITLE = "Поддержка — ConvertContext";
 const DESCRIPTION =
   "Форма обращения в поддержку и база знаний появятся здесь совсем скоро. А пока, если конвертер работает не так, как ожидалось, — просто попробуйте другой формат или обновите страницу.";
 const PATH = "/support";
@@ -43,7 +43,7 @@ export default function SupportPage() {
             bg: "rgba(168,107,255,0.14)",
             color: "#c39bff",
             title: "Статус сервиса",
-            text: "Актуальная информация о работоспособности ConvertHub.",
+            text: "Актуальная информация о работоспособности ConvertContext.",
           },
         ]}
       />

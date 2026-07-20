@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata, buildWebPageJsonLd } from "@/lib/seo";
 
-const TITLE = "Настройки — ConvertHub";
+const TITLE = "Настройки — ConvertContext";
 const DESCRIPTION = "Раздел настроек аккаунта, языка интерфейса и уведомлений появится после запуска регистрации.";
 const PATH = "/settings";
 

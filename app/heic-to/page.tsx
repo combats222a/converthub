@@ -5,7 +5,7 @@ import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig } from "@/lib/site-config";
 
-const TITLE = "В любой формат → HEIC — ConvertHub";
+const TITLE = "В любой формат → HEIC — ConvertContext";
 const DESCRIPTION =
   "Конвертируйте изображения из JPG, PNG и других форматов в HEIC прямо в браузере — быстро, бесплатно, без загрузки на сервер.";
 const PATH = "/heic-to";
@@ -32,7 +32,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "В любой формат → HEIC — ConvertHub",
+  name: "В любой формат → HEIC — ConvertContext",
   url: `${siteConfig.url}${PATH}`,
   description: DESCRIPTION,
   applicationCategory: "MultimediaApplication",

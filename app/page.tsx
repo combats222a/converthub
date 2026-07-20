@@ -1,6 +1,6 @@
 import { Converter } from "@/components/converter/converter";
 import { PopularFormats } from "@/components/home/popular-formats";
-import { WhyConvertHub } from "@/components/home/why-convert-hub";
+import { WhyConvertContext } from "@/components/home/why-convert-hub";
 import { RecentConversions } from "@/components/home/recent-conversions";
 import { Footer } from "@/components/layout/footer";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -44,8 +44,8 @@ export default function Home() {
           <PopularFormats />
 
           <Divider />
-          <SectionTitle>Почему ConvertHub</SectionTitle>
-          <WhyConvertHub />
+          <SectionTitle>Почему ConvertContext</SectionTitle>
+          <WhyConvertContext />
 
           <Divider />
           <RecentConversions />
