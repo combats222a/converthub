@@ -1,38 +1,53 @@
-"use client";
+import type { Metadata } from "next";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteConfig } from "@/lib/site-config";
+import { EbookPageClient } from "./ebook-page-client";
 
-import { Converter } from "@/components/converter/converter";
-import { Footer } from "@/components/layout/footer";
+const TITLE = "Конвертер электронных книг — ConvertHub";
+const DESCRIPTION =
+  "Конвертируйте электронные книги и текстовые файлы EPUB, FB2, TXT, MD, HTML и PDB в нужный формат прямо в браузере — без загрузки на сервер.";
+const PATH = "/ebook";
 
-const EBOOK_SOURCE_FORMATS = ["EPUB", "FB2", "TXT", "MD", "HTML", "PDB"];
+export const metadata: Metadata = {
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
+  alternates: { canonical: PATH },
+  openGraph: {
+    type: "website",
+    url: `${siteConfig.url}${PATH}`,
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/twitter-image"],
+  },
+};
 
-function EbookConverter() {
-  const searchParams = useSearchParams();
-  const initialTargetCode = searchParams.get("to")?.toUpperCase() || null;
-
-  return (
-    <div className="mx-auto max-w-[900px] px-6 pt-14 pb-24 text-left sm:px-10">
-      <Converter
-        heading="Книги → в любой формат"
-        description="Сконвертируйте электронную книгу в EPUB, FB2, TXT и другие форматы прямо в браузере."
-        category="ebook"
-        sourceFormatOptions={EBOOK_SOURCE_FORMATS}
-        initialTargetCode={initialTargetCode}
-        mode="process"
-      />
-    </div>
-  );
-}
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: TITLE,
+  url: `${siteConfig.url}${PATH}`,
+  description: DESCRIPTION,
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Any (веб-браузер)",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
 
 export default function EbookPage() {
   return (
     <>
-      <Suspense fallback={null}>
-        <EbookConverter />
-      </Suspense>
-      <Footer />
+      <JsonLd data={jsonLd} />
+      <EbookPageClient />
     </>
   );
 }

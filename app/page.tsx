@@ -3,6 +3,23 @@ import { PopularFormats } from "@/components/home/popular-formats";
 import { WhyConvertHub } from "@/components/home/why-convert-hub";
 import { RecentConversions } from "@/components/home/recent-conversions";
 import { Footer } from "@/components/layout/footer";
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteConfig } from "@/lib/site-config";
+
+const webApplicationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: siteConfig.name,
+  url: siteConfig.url,
+  description: siteConfig.description,
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Any (веб-браузер)",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
@@ -19,6 +36,7 @@ function Divider() {
 export default function Home() {
   return (
     <>
+      <JsonLd data={webApplicationJsonLd} />
       <div className="mx-auto max-w-[900px] px-6 pt-14 pb-24 text-left sm:px-10">
         <Converter>
           <Divider />

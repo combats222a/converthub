@@ -1,36 +1,53 @@
-"use client";
+import type { Metadata } from "next";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { JsonLd } from "@/components/seo/json-ld";
+import { siteConfig } from "@/lib/site-config";
+import { HeicPageClient } from "./heic-page-client";
 
-import { Converter } from "@/components/converter/converter";
-import { Footer } from "@/components/layout/footer";
+const TITLE = "HEIC — конвертируйте в любой формат — ConvertHub";
+const DESCRIPTION =
+  "Конвертируйте HEIC-фото с iPhone в JPG, PNG и другие форматы. Выберите нужный формат — конвертация происходит прямо в браузере.";
+const PATH = "/heic";
 
-function HeicConverter() {
-  const searchParams = useSearchParams();
-  const initialTargetCode = searchParams.get("to")?.toUpperCase() || null;
+export const metadata: Metadata = {
+  title: { absolute: TITLE },
+  description: DESCRIPTION,
+  alternates: { canonical: PATH },
+  openGraph: {
+    type: "website",
+    url: `${siteConfig.url}${PATH}`,
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/opengraph-image"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/twitter-image"],
+  },
+};
 
-  return (
-    <div className="mx-auto max-w-[900px] px-6 pt-14 pb-24 text-left sm:px-10">
-      <Converter
-        heading="HEIC → в любой формат"
-        description="Сконвертируйте HEIC/HEIF-фото в JPG, PNG и другие форматы прямо в браузере."
-        category="image"
-        sourceFormatOptions={["HEIC", "HEIF"]}
-        initialTargetCode={initialTargetCode}
-        mode="process"
-      />
-    </div>
-  );
-}
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: TITLE,
+  url: `${siteConfig.url}${PATH}`,
+  description: DESCRIPTION,
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Any (веб-браузер)",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+};
 
 export default function HeicPage() {
   return (
     <>
-      <Suspense fallback={null}>
-        <HeicConverter />
-      </Suspense>
-      <Footer />
+      <JsonLd data={jsonLd} />
+      <HeicPageClient />
     </>
   );
 }
